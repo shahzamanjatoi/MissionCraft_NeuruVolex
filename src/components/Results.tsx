@@ -1,5 +1,4 @@
-﻿
-import { useGame } from "../store/useGame";
+﻿import { useGame } from "../store/useGame";
 import { LaunchReplay } from "./LaunchReplay";
 
 export function Results() {
@@ -13,7 +12,9 @@ export function Results() {
 
   return (
     <section>
-      <h2>Mission Results</h2>
+      <h2 className="step-title">
+        <span className="step-num mono">04</span> Mission Results
+      </h2>
 
       <h3>Engineering Evaluation</h3>
       <p className={r.feasible ? "verdict good" : "verdict bad"}>
@@ -22,11 +23,11 @@ export function Results() {
           : "Engineering checks found problems."}
       </p>
 
-      <p>
-        Target: <strong>{state.design.target}</strong> · Score:{" "}
-        <strong>{r.score}/100</strong> · Cost:{" "}
-        <strong>${r.cost_musd}M</strong>
-      </p>
+      <div className="result-kpis">
+        <div><span>Target</span><strong className="mono">{state.design.target}</strong></div>
+        <div><span>Score</span><strong className="mono">{r.score}/100</strong></div>
+        <div><span>Cost</span><strong className="mono">${r.cost_musd}M</strong></div>
+      </div>
 
       {r.warnings.length > 0 && (
         <>
@@ -46,19 +47,19 @@ export function Results() {
 
           <p>
             Outcome:{" "}
-            <strong>
+            <strong className="mono">
               {simulation.summary.outcome.toUpperCase()}
             </strong>
           </p>
 
           <p>
             Final phase:{" "}
-            <strong>{simulation.summary.phaseReached}</strong>
+            <strong className="mono">{simulation.summary.phaseReached}</strong>
           </p>
 
           <p>
             Simulated mission time:{" "}
-            <strong>
+            <strong className="mono">
               {formatTime(simulation.finalState.elapsedSeconds)}
             </strong>
           </p>

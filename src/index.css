@@ -1,26 +1,74 @@
-﻿:root {
+﻿/* ==========================================================================
+   MissionCraft — global tokens, typography, base elements & shared components
+   ========================================================================== */
+
+:root {
+  /* Colour */
   --bg-primary: #060b14;
+  --bg-elevated: #04080f;
   --bg-card: #0d1422;
   --bg-card-hover: #131c2e;
+  --bg-inset: #0a1120;
   --border-subtle: #1e293b;
   --accent-cyan: #38bdf8;
   --accent-cyan-hover: #0ea5e9;
+  --accent-soft: rgba(56, 189, 248, 0.12);
   --text-primary: #f8fafc;
   --text-muted: #94a3b8;
+  --ok: #4ade80;
+  --warn: #ffc27a;
+  --bad: #ff8c9a;
+
+  /* Typography — aerospace stack */
+  --font-display: "Space Grotesk", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 0.8, 0.24, 1);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .container {
@@ -29,11 +77,14 @@ body {
   padding: 0 1.5rem;
 }
 
+/* ---------- Navbar ---------- */
+
 .navbar {
   position: sticky;
   top: 0;
   z-index: 50;
   background: rgba(6, 11, 20, 0.9);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -43,6 +94,10 @@ body {
   align-items: center;
   justify-content: space-between;
   height: 72px;
+}
+
+.navbar-inner > div:first-child span {
+  font-family: var(--font-display);
 }
 
 .nav-links {
@@ -66,6 +121,23 @@ body {
   color: var(--accent-cyan);
 }
 
+@media (max-width: 900px) {
+  .navbar-inner {
+    height: auto;
+    padding: 0.75rem 1.5rem;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 1.1rem;
+  }
+}
+
+/* ---------- Layout helpers ---------- */
+
 .grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -76,19 +148,6 @@ body {
   .grid-3 {
     grid-template-columns: 1fr;
   }
-}
-
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: border-color 0.2s, transform 0.2s;
-}
-
-.card:hover {
-  border-color: var(--accent-cyan);
-  transform: translateY(-2px);
 }
 
 .simulator-layout {
@@ -108,22 +167,128 @@ body {
   .simulator-layout {
     grid-template-columns: 1fr;
   }
+
   .sticky-sidebar {
     position: static;
   }
 }
 
+/* ---------- Cards (single source of truth) ----------
+   .card          → static content surface (Home, Team, Contact)
+   .cards > .card → selectable option tiles (buttons) and link tiles (anchors)
+   -------------------------------------------------------------------- */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: inherit;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  border-color: var(--accent-cyan);
+  transform: translateY(-2px);
+}
+
+.cards > .card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: var(--bg-card-hover);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cards > .card:not(.spec-card) > span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.cards > .card.selected {
+  border-color: var(--accent-cyan);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+}
+
+.cards > .card:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cards > .card:disabled:hover {
+  border-color: var(--border-subtle);
+  transform: none;
+}
+
+/* ---------- Buttons ---------- */
+
 .btn-primary {
   background: var(--accent-cyan);
-  color: #060b14;
+  color: var(--bg-primary);
   font-weight: 700;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-primary:hover {
   background: var(--accent-cyan-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -8px rgba(56, 189, 248, 0.6);
+}
+
+.btn-lg {
+  font-size: 1.05rem;
+  padding: 0.9rem 1.85rem;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+/* ---------- Scroll reveal ---------- */
+
+.reveal {
+  opacity: 0;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  animation: reveal-up 0.85s var(--ease-out) backwards;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1;
+  }
+
+  .reveal.is-visible {
+    animation: none;
+  }
 }
