@@ -31,8 +31,8 @@ export function generateMissionEvents(
   const eclipseStart =
     missionDurationSeconds * (0.2 + random() * 0.1);
 
-  const eclipseDuration =
-    missionDurationSeconds * (0.05 + random() * 0.05);
+  // About 36 minutes (a typical low Earth orbit shadow), varying a little by seed.
+  const eclipseDuration = 36 * 60 * (0.9 + random() * 0.2);
 
   // Generate communication loss during the later part.
   const communicationLossStart =
