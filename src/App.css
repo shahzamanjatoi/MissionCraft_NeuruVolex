@@ -85,3 +85,14 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .replay-events li { padding: 4px 0; color: #9aa6c4; }
 .replay-events li.done { color: #e8ecf5; }
 .replay-summary { margin-top: 12px; padding: 10px 12px; background: #182043; border-radius: 8px; }
+
+/* Looping video background */
+.video-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #060a18; }
+.video-bg__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.video-bg__shade { position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(6, 10, 24, .72) 0%, rgba(6, 10, 24, .62) 50%, rgba(6, 10, 24, .8) 100%); }
+.app { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .video-bg__video { display: none; }
+  .video-bg { background: #060a18 url("/hero-poster.jpg") center / cover no-repeat; }
+}

@@ -7,6 +7,7 @@ import { RocketPicker } from "./components/RocketPicker";
 import { SpacecraftBuilder } from "./components/SpacecraftBuilder";
 import { ScoreBoard } from "./components/ScoreBoard";
 import { Results } from "./components/Results";
+import { VideoBackground } from "./components/VideoBackground";
 import { NasaResources } from "./components/NasaResources";
 
 function Game() {
@@ -47,6 +48,7 @@ function Game() {
 export default function App() {
   return (
     <GameProvider>
+      <VideoBackground />
       <>
       <Game />
       <NasaResources />
