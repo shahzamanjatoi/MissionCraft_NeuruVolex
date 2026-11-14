@@ -1,6 +1,8 @@
 import type { MissionDesign } from "../types/mission";
 import type { InstrumentOption } from "../data/instruments";
 import { STARTER_DESIGNS } from "../data/presets";
+import { LEVEL_ORDER, isTargetUnlocked } from "../data/levels";
+import { evaluateMission } from "../engine";
 
 export type GameStep = "target" | "rocket" | "spacecraft" | "results";
 export const STEP_ORDER: GameStep[] = ["target", "rocket", "spacecraft", "results"];
@@ -10,6 +12,8 @@ export type NumericField = "dryMass_kg" | "propellantMass_kg" | "solarArea_m2" |
 export interface GameState {
   step: GameStep;
   design: MissionDesign;
+  /** Targets the player has finished successfully. */
+  completed: MissionDesign["target"][];
 }
 
 export type GameAction =
@@ -21,10 +25,11 @@ export type GameAction =
   | { type: "TOGGLE_INSTRUMENT"; instrument: InstrumentOption }
   | { type: "NEXT" }
   | { type: "BACK" }
+  | { type: "UNLOCK_ALL" }
   | { type: "RESET" };
 
-export function createInitialState(): GameState {
-  return { step: "target", design: structuredClone(STARTER_DESIGNS.Moon) };
+export function createInitialState(completed: GameState["completed"] = []): GameState {
+  return { step: "target", design: structuredClone(STARTER_DESIGNS.LEO), completed };
 }
 
 function withSpacecraft(state: GameState, patch: Partial<MissionDesign["spacecraft"]>): GameState {
@@ -34,6 +39,8 @@ function withSpacecraft(state: GameState, patch: Partial<MissionDesign["spacecra
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "SET_TARGET":
+      // Locked levels cannot be chosen.
+      if (!isTargetUnlocked(state.completed, action.target)) return state;
       // Loading a starter design gives the player a working base to improve.
       return { ...state, design: structuredClone(STARTER_DESIGNS[action.target]) };
     case "SET_LAUNCHER":
@@ -54,13 +61,21 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
     case "NEXT": {
       const i = STEP_ORDER.indexOf(state.step);
-      return { ...state, step: STEP_ORDER[Math.min(i + 1, STEP_ORDER.length - 1)] };
+      const step = STEP_ORDER[Math.min(i + 1, STEP_ORDER.length - 1)];
+      // Finishing a feasible mission completes the level and opens the next one.
+      const target = state.design.target;
+      const won = step === "results" && evaluateMission(state.design).feasible;
+      const completed = won && !state.completed.includes(target) ? [...state.completed, target] : state.completed;
+      return { ...state, step, completed };
     }
     case "BACK": {
       const i = STEP_ORDER.indexOf(state.step);
       return { ...state, step: STEP_ORDER[Math.max(i - 1, 0)] };
     }
+    case "UNLOCK_ALL":
+      // Demo mode: open every level.
+      return { ...state, completed: LEVEL_ORDER.slice(0, -1) };
     case "RESET":
-      return createInitialState();
+      return createInitialState(state.completed);
   }
 }
