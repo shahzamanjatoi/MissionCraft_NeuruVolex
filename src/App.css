@@ -96,3 +96,290 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   .video-bg__video { display: none; }
   .video-bg { background: #060a18 url("/hero-poster.jpg") center / cover no-repeat; }
 }
+/* Multi-Page Layout Additions */
+.simulator-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 1rem;
+}
+
+.simulator-header .steps {
+  display: flex;
+  list-style: none;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+}
+
+.simulator-header .steps li {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.simulator-header .steps li.current {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.simulator-header .steps li.done {
+  border-color: #22c55e;
+  color: #4ade80;
+}
+
+.nasa-grid-wrapper > * {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Full-Viewport Scrolling Hero Video */
+.hero-video-section {
+  position: relative;
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.hero-video-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-video-layer video,
+.hero-video-layer img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  opacity: 0.9 !important;
+}
+
+.hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 11, 20, 0.45) 0%,
+    rgba(6, 11, 20, 0.65) 65%,
+    #060b14 100%
+  );
+}
+
+.hero-video-content {
+  position: relative;
+  z-index: 2;
+  max-width: 860px;
+  text-align: center;
+  padding: 4rem 1.5rem;
+}
+
+.hero-pill {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: rgba(6, 11, 20, 0.72);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: var(--accent-cyan);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  backdrop-filter: blur(8px);
+}
+
+.hero-title {
+  font-size: clamp(2.6rem, 6vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.65);
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: #e2e8f0;
+  margin-bottom: 2.25rem;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75);
+}
+
+.btn-secondary-glass {
+  padding: 0.9rem 1.75rem;
+  border-radius: 8px;
+  background: rgba(13, 20, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-secondary-glass:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(13, 20, 34, 0.92);
+}
+
+.scroll-cue {
+  margin-top: 3.5rem;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+/* Interactive Slideshow */
+.slideshow-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 2.5rem;
+}
+
+.slideshow-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .slideshow-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.slide-stat-pill {
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.slideshow-visual {
+  background: #060b14;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.slide-tab-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.slide-tab-btn.active {
+  border-color: var(--accent-cyan);
+  color: var(--text-primary);
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.slide-arrow-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.slide-arrow-btn:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+/* Fix NASA Resources 3-column layout on Science page */
+.nasa-grid-wrapper section,
+.nasa-grid-wrapper > div {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.nasa-grid-wrapper ul,
+.nasa-grid-wrapper [class*="grid"],
+.nasa-grid-wrapper [class*="list"] {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 1.5rem !important;
+}
+
+@media (max-width: 900px) {
+  .nasa-grid-wrapper ul,
+  .nasa-grid-wrapper [class*="grid"],
+  .nasa-grid-wrapper [class*="list"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Fix VideoBackground inside Hero so it is visible and scrolls up with the page */
+main {
+  display: block !important;
+  width: 100% !important;
+}
+
+.hero-video-layer .video-bg {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  pointer-events: none;
+}
+
+.hero-video-layer .video-bg__video {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  opacity: 1 !important;
+}
+
+.hero-video-layer .video-bg__shade {
+  display: none !important;
+}
+
+.hero-video-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(6, 11, 20, 0.25) 0%,
+    rgba(6, 11, 20, 0.50) 70%,
+    #060b14 100%
+  ) !important;
+}
