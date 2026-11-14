@@ -25,9 +25,11 @@ Every time the design changes, `evaluateMission` runs these checks:
 | Power | Do the solar panels make enough power for the instruments? |
 | Battery | Can the battery cover the time in Earth's shadow? |
 | Communications | Is the radio link to Earth strong enough? |
+| Thermal | Can the radiators shed the heat the electronics make? (radiated heat vs electrical load) |
+| Risk | How thin are the margins, how far is the target, how many instruments? (scored, not pass/fail) |
 | Cost | Rocket and spacecraft cost in million USD |
 
-**Score (0 to 100):** delta-v 25 points, mass 20, power and battery 20, communications 20, cost 15. A passed check earns half its points, and extra safety margin earns the rest. A design that fails any check is capped at 49.
+**Score (0 to 100):** delta-v 20 points, mass 15, power and battery 15, communications 15, thermal 10, risk 10, cost 15. A passed check earns half its points, and extra safety margin earns the rest. A design that fails any check is capped at 49.
 
 ## Run it on your computer
 
@@ -82,8 +84,9 @@ src/
 **Not finished yet:**
 
 - **3D view** of the orbit (in progress).
-- **GMAT check.** The Moon and Mars delta-v numbers are rounded textbook values and have not yet been verified against GMAT.
-- **Thermal and risk checks.** The engine does not model heat or risk yet.
+- **GMAT check.** The Moon and Mars delta-v numbers come from patched-conic formulas in `engine/orbit.ts` and have not yet been verified against GMAT.
+- **Thermal and risk are simplified.** Thermal is a one-number radiator model (all electrical power becomes heat; no solar heating or cold-case heaters). Risk is a game score built from thin margins, target distance and instrument count, not a real reliability analysis.
+- **Structures and attitude control** are not modelled yet.
 - **Real-mission masses** are rounded public figures and should be double-checked.
 
 ## Team

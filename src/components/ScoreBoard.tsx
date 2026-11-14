@@ -22,6 +22,9 @@ export function ScoreBoard() {
         <Row label="Mass margin" ok={r.massMargin >= 0} value={`${(r.massMargin * 100).toFixed(0)}%`} />
         <Row label="Power margin" ok={r.powerMargin >= 0} value={`${(r.powerMargin * 100).toFixed(0)}%`} />
         <Row label="Comms link" ok={r.commsOk} value={r.commsOk ? "Strong" : "Weak"} />
+        <Row label="Thermal margin" ok={r.thermalOk} value={`${(r.thermalMargin * 100).toFixed(0)}%`} />
+        <Row label="Mission risk" ok={r.riskLevel !== "high"}
+          value={`${r.riskLevel[0].toUpperCase()}${r.riskLevel.slice(1)} (${Math.round(r.riskScore * 100)}/100)`} />
         <li className="row"><span>Cost</span><strong>${r.cost_musd}M</strong><span /></li>
       </ul>
       {r.warnings.length > 0 && (

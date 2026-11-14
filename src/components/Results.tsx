@@ -1,5 +1,4 @@
-﻿
-import { useGame } from "../store/useGame";
+﻿import { useGame } from "../store/useGame";
 import { LaunchReplay } from "./LaunchReplay";
 
 export function Results() {
@@ -26,6 +25,13 @@ export function Results() {
         Target: <strong>{state.design.target}</strong> · Score:{" "}
         <strong>{r.score}/100</strong> · Cost:{" "}
         <strong>${r.cost_musd}M</strong>
+      </p>
+
+      <p>
+        Thermal: <strong>{r.thermalOk ? "Within limits" : "Overheating"}</strong>{" "}
+        ({(r.thermalMargin * 100).toFixed(0)}% cooling margin) · Mission risk:{" "}
+        <strong>{r.riskLevel}</strong> ({Math.round(r.riskScore * 100)}/100)
+        {r.riskDrivers.length > 0 && <> · Main causes: {r.riskDrivers.join(", ")}</>}
       </p>
 
       {r.warnings.length > 0 && (
