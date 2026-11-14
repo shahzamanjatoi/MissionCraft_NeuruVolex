@@ -1,6 +1,7 @@
-import { TARGETS, nextLevel } from "../data";
+﻿import { TARGETS, nextLevel } from "../data";
 import { matchRealMission } from "../engine/matchMission";
 import { useGame } from "../store/useGame";
+import { LaunchReplay } from "./LaunchReplay";
 
 export function Results() {
   const { result: r, state, dispatch } = useGame();
@@ -31,6 +32,7 @@ export function Results() {
         <p>{match.mission.summary}</p>
         <p className="hint">Your spacecraft is about {size} it at launch.</p>
       </div>
+      <LaunchReplay />
       <button type="button" className="primary" onClick={() => dispatch({ type: "RESET" })}>
         {r.feasible && nextName ? "Next level" : "Play again"}
       </button>
