@@ -7,6 +7,7 @@ import { RocketPicker } from "./components/RocketPicker";
 import { SpacecraftBuilder } from "./components/SpacecraftBuilder";
 import { ScoreBoard } from "./components/ScoreBoard";
 import { Results } from "./components/Results";
+import { NasaResources } from "./components/NasaResources";
 
 function Game() {
   const { state, dispatch } = useGame();
@@ -46,7 +47,10 @@ function Game() {
 export default function App() {
   return (
     <GameProvider>
+      <>
       <Game />
+      <NasaResources />
+      </>
     </GameProvider>
   );
 }
