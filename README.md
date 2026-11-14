@@ -1,3 +1,6 @@
+﻿<p align="center">
+  <img src="docs/images/space-apps-logo-round.png" alt="NASA Space Apps Challenge, Faisalabad" width="220" />
+</p>
 # MissionCraft
 
 **Design a space mission, then see if it works.**
