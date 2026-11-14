@@ -32,3 +32,11 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .score.good { color: #7ee2a8; } .score.bad { color: #ff8c9a; }
 .warnings { margin-top: 12px !important; color: #ffc27a; font-size: .85rem; } .warnings li { margin-bottom: 6px; }
 .verdict { font-size: 1.3rem; font-weight: 700; } .verdict.good { color: #7ee2a8; } .verdict.bad { color: #ff8c9a; }
+.hint { color: #9aa6c4; font-size: .9rem; margin: 0 0 12px; }
+.card:disabled { opacity: .45; cursor: not-allowed; }
+.card:disabled:hover { border-color: #2c3766; }
+.locked { color: #ffc27a !important; }
+.link { margin-top: 16px; background: none; border: none; color: #8fb0ff; text-decoration: underline; cursor: pointer; padding: 0; }
+.unlocked { color: #7ee2a8; font-weight: 600; }
+.match { margin: 20px 0; padding: 14px; border-radius: 10px; border: 1px solid #2c3766; background: #182043; }
+.match h3 { margin-top: 0; }

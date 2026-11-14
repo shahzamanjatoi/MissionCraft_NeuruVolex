@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { wetMass, massMargin } from "../mass";
 import { availableDeltaV } from "../propulsion";
-import { circularSpeed, hohmannDeltaV, requiredDeltaV, R_EARTH, LEO_ALTITUDE, GEO_RADIUS } from "../orbit";
+import { circularSpeed, hohmannDeltaV, requiredDeltaV, moonDeltaV, marsDeltaV, R_EARTH, LEO_ALTITUDE, GEO_RADIUS } from "../orbit";
 import { solarPower, powerBudget } from "../power";
 
 const sc = {
@@ -33,6 +33,20 @@ describe("orbit", () => {
     const t = hohmannDeltaV(R_EARTH + LEO_ALTITUDE, GEO_RADIUS).total;
     expect(t).toBeGreaterThan(3800);
     expect(t).toBeLessThan(3900);
+  });
+  it("Moon: TLI about 3.08 km/s, LOI about 0.82 km/s", () => {
+    const m = moonDeltaV();
+    expect(m.tli).toBeGreaterThan(3050);
+    expect(m.tli).toBeLessThan(3120);
+    expect(m.loi).toBeGreaterThan(780);
+    expect(m.loi).toBeLessThan(860);
+  });
+  it("Mars: TMI about 3.57 km/s, capture about 0.9 km/s", () => {
+    const m = marsDeltaV();
+    expect(m.tmi).toBeGreaterThan(3500);
+    expect(m.tmi).toBeLessThan(3650);
+    expect(m.moi).toBeGreaterThan(850);
+    expect(m.moi).toBeLessThan(960);
   });
   it("needs nothing extra for LEO", () => expect(requiredDeltaV("LEO")).toBe(0));
 });
