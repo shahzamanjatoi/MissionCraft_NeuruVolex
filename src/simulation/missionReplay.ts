@@ -17,6 +17,8 @@ import type { MissionEvent } from "../types/simulation";
 export function generateMissionEvents(
   eventSeed: number,
   missionDurationSeconds: number,
+  /** If given, the eclipse lasts exactly this long (so the simulation matches the engine's power check). */
+  eclipseDurationOverrideSeconds?: number,
 ): MissionEvent[] {
   if (
     !Number.isFinite(missionDurationSeconds) ||
@@ -31,8 +33,11 @@ export function generateMissionEvents(
   const eclipseStart =
     missionDurationSeconds * (0.2 + random() * 0.1);
 
-  const eclipseDuration =
+  // The random number is always drawn, so the other events stay the same either way.
+  const randomEclipseDuration =
     missionDurationSeconds * (0.05 + random() * 0.05);
+
+  const eclipseDuration = eclipseDurationOverrideSeconds ?? randomEclipseDuration;
 
   // Generate communication loss during the later part.
   const communicationLossStart =

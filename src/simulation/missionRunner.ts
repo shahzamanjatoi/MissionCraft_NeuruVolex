@@ -1,4 +1,3 @@
-
 import type {
   MissionStartSnapshot,
   MissionState,
@@ -14,6 +13,7 @@ import {
 import { applyMissionEvent } from "./missionEvents";
 import { advanceMissionTime } from "./missionSimulation";
 import { generateMissionEvents } from "./missionReplay";
+import { eclipseSeconds } from "../engine/power";
 import {
   appendTelemetry,
   type MissionTelemetryRecord,
@@ -52,6 +52,9 @@ export function runMissionSimulation(
   const events = generateMissionEvents(
     snapshot.eventSeed,
     missionDurationSeconds,
+    // Same eclipse length the engine's battery check uses, so a design that passes
+    // the engineering checks does not run out of power in the simulation.
+    eclipseSeconds(snapshot.design.target),
   );
 
   let state = createInitialMissionState(snapshot);
