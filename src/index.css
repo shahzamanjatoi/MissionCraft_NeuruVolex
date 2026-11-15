@@ -121,18 +121,86 @@ select {
   color: var(--accent-cyan);
 }
 
+/* Hamburger button — hidden on desktop */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0 9px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+  height: 2.5px;
+  width: 100%;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: transform 0.25s var(--ease-out), opacity 0.2s;
+}
+
+.menu-toggle.open span:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg);
+}
+.menu-toggle.open span:nth-child(2) {
+  opacity: 0;
+}
+.menu-toggle.open span:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
 @media (max-width: 900px) {
   .navbar-inner {
-    height: auto;
-    padding: 0.75rem 1.5rem;
-    flex-direction: column;
-    gap: 0.6rem;
+    height: 64px;
+    position: relative;
   }
 
-  .nav-links {
-    flex-wrap: wrap;
+  .menu-toggle {
+    display: flex;
+    order: -1; /* hamburger on the left, like the reference site */
+  }
+
+  .navbar-brand {
+    flex: 1;
     justify-content: center;
-    gap: 0.6rem 1.1rem;
+    margin-right: 44px; /* balance the hamburger so the logo stays centred */
+  }
+
+  /* Collapsed by default; slides down when opened */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    padding: 1rem 1.5rem 1.5rem;
+    background: rgba(6, 11, 20, 0.98);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-link {
+    text-align: left;
+    padding: 0.85rem 0;
+    font-size: 1.05rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .nav-links .btn-primary {
+    margin-top: 0.75rem;
+    width: 100%;
+    text-align: center;
   }
 }
 

@@ -2,6 +2,8 @@
 import type { PageId } from "../components/Navbar";
 import { VideoBackground } from "../components/VideoBackground";
 import { Reveal } from "../components/Reveal";
+import { HowItWorks } from "../components/HowItWorks";
+import { MissionTiers } from "../components/MissionTiers";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import { requiredDeltaV } from "../engine/orbit";
 
@@ -520,6 +522,10 @@ export function HomePage({ onNavigate }: { onNavigate: (page: PageId) => void })
       <section className="section section--lab">
         <MissionLabSlideshow />
       </section>
+
+      {/* 3b. How MissionCraft works + Mission Tiers */}
+      <HowItWorks />
+      <MissionTiers onGetStarted={() => onNavigate("simulator")} onUpgrade={() => onNavigate("contact")} />
 
       {/* 4. Concept to orbit */}
       <section className="section">
