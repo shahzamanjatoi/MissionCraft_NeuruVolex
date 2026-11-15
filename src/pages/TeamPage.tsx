@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -59,7 +59,7 @@ const TEAM: Member[] = [
     module: "engine",
     accent: "#38bdf8",
     suit: "#7c4a2d",
-    avatars: ["/team/shahzaman.png"],
+    avatars: ["/team/SHAHZAMAN.webp"],
   },
   {
     id: "alisha",
@@ -79,7 +79,7 @@ const TEAM: Member[] = [
     module: "viz",
     accent: "#818cf8",
     suit: "#cbd5e1",
-    avatars: ["/team/alisha.png"],
+    avatars: ["/team/Alisha.webp"],
   },
   {
     id: "yousaif",
@@ -99,7 +99,7 @@ const TEAM: Member[] = [
     module: "data",
     accent: "#2dd4bf",
     suit: "#ea580c",
-    avatars: ["/team/yousaif.png"],
+    avatars: ["/team/yousaif.jpg"],
   },
   {
     id: "zara",
@@ -119,7 +119,7 @@ const TEAM: Member[] = [
     module: "payload",
     accent: "#60a5fa",
     suit: "#4d7c0f",
-    avatars: ["/team/zara.png"],
+    avatars: ["/team/Zara.webp"],
   },
 ];
 
@@ -211,7 +211,7 @@ function AvatarImage({ member, src }: { member: Member; src?: string }) {
     <img
       src={src}
       alt={`${member.name} avatar`}
-      className="h-full w-full object-cover"
+      className="h-full w-full bg-white object-contain p-2"
       onError={() => setFailed(true)}
       draggable={false}
     />
