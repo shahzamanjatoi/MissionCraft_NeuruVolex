@@ -2,27 +2,29 @@ import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { SPACECRAFT_SCALE } from '../utils/sceneConstants';
-import { getSpacecraftPosition, getSpacecraftRotation } from '../utils/orbitPath';
-import type { SceneTarget } from '../types/scene';
+
+const LOCAL_FORWARD = new THREE.Vector3(1, 0, 0);
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 interface SpacecraftProps {
-  target: SceneTarget;
-  progress: number;
+  trajectoryPosition: THREE.Vector3;
+  trajectoryDirection: THREE.Vector3;
+  positionRef: React.MutableRefObject<THREE.Vector3>;
   isThrusting?: boolean;
   onSelect?: () => void;
 }
 
 export function Spacecraft({
-  target,
-  progress,
+  trajectoryPosition,
+  trajectoryDirection,
+  positionRef,
   isThrusting = false,
   onSelect,
 }: SpacecraftProps) {
   const groupRef = useRef<THREE.Group>(null);
   const exhaustRef = useRef<THREE.Mesh>(null);
-  const orbitAngleRef = useRef(0);
+  const desiredRotationRef = useRef(new THREE.Quaternion());
 
   const resources = useMemo(() => ({
     materials: {
@@ -55,6 +57,12 @@ export function Spacecraft({
         transparent: true,
         opacity: 0.85,
       }),
+      selectionHitArea: new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 0,
+        colorWrite: false,
+        depthWrite: false,
+      }),
     },
     geometries: {
       body: new THREE.BoxGeometry(2.0, 0.9, 1.0),
@@ -64,6 +72,7 @@ export function Spacecraft({
       dish: new THREE.ConeGeometry(0.44, 0.28, 24, 1, true),
       nozzle: new THREE.CylinderGeometry(0.22, 0.30, 0.55, 12),
       exhaust: new THREE.ConeGeometry(0.18, 0.5, 8),
+      selectionHitArea: new THREE.SphereGeometry(8, 16, 12),
     },
   }), []);
 
@@ -75,21 +84,16 @@ export function Spacecraft({
   // Exhaust pulse targets
   const pulseRef = useRef({ t: 0 });
 
-  // ── Advance orbit angle + reposition every frame ──────────────────────────
   useFrame((_state, delta) => {
-    const targetAngle = progress * Math.PI * 2;
-    orbitAngleRef.current = THREE.MathUtils.damp(
-      orbitAngleRef.current,
-      targetAngle,
-      4,
-      delta,
-    );
-    const angle = orbitAngleRef.current;
-
     if (groupRef.current) {
-      const pos = getSpacecraftPosition(target, angle);
-      groupRef.current.position.copy(pos);
-      groupRef.current.rotation.y = getSpacecraftRotation(angle);
+      const smoothFactor = 1 - Math.exp(-8 * delta);
+      groupRef.current.position.lerp(trajectoryPosition, smoothFactor);
+      desiredRotationRef.current.setFromUnitVectors(
+        LOCAL_FORWARD,
+        trajectoryDirection,
+      );
+      groupRef.current.quaternion.slerp(desiredRotationRef.current, smoothFactor);
+      positionRef.current.copy(groupRef.current.position);
     }
 
     // Thruster exhaust pulse
@@ -100,16 +104,9 @@ export function Spacecraft({
     }
   });
 
-  // Initial position for first frame
-  const initialPos = useMemo(
-    () => getSpacecraftPosition(target, 0),
-    [target],
-  );
-
   return (
     <group
       ref={groupRef}
-      position={initialPos}
       scale={SPACECRAFT_SCALE}
       dispose={null}
       onClick={(event) => {
@@ -117,6 +114,11 @@ export function Spacecraft({
         onSelect?.();
       }}
     >
+      <mesh
+        geometry={resources.geometries.selectionHitArea}
+        material={resources.materials.selectionHitArea}
+      />
+
       {/* ── Hull body ───────────────────────────────────────────────────────── */}
       <mesh geometry={resources.geometries.body} material={resources.materials.hull} castShadow />
 

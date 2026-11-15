@@ -77,6 +77,7 @@ export function Results() {
               }
             >
               <SceneCanvas
+                key={state.design.target}
                 target={state.design.target}
                 simulation={simulation}
                 targetName={TARGET_NAME[state.design.target]}

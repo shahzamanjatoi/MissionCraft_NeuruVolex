@@ -6,7 +6,7 @@ import { TelemetryOverlay } from './TelemetryOverlay';
 import { MissionTimeline } from './MissionTimeline';
 import { useMissionScene } from '../hooks/useMissionScene';
 import { CAMERA_PRESETS } from '../utils/sceneConstants';
-import type { SceneTarget } from '../types/scene';
+import type { CameraViewpoint, SceneTarget } from '../types/scene';
 import type { MissionRunOutput } from '../../simulation/missionRunner';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -35,6 +35,12 @@ import { Component, type ReactNode } from 'react';
 
 interface EBProps   { children: ReactNode }
 interface EBState   { error: Error | null }
+
+function formatMissionTime(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${hours}h ${minutes}m`;
+}
 
 class CanvasErrorBoundary extends Component<EBProps, EBState> {
   constructor(props: EBProps) {
@@ -83,6 +89,10 @@ export function SceneCanvas({
     name: string;
     description: string;
   } | null>(null);
+  const [followSpacecraft, setFollowSpacecraft] = useState(false);
+  const [viewpoint, setViewpoint] = useState<CameraViewpoint>('overview');
+  const [zoomLevel, setZoomLevel] = useState(0);
+  const telemetry = scene.animFrame.telemetry;
 
   // isThrusting: true during launch / transfer phases
   const isThrusting =
@@ -107,13 +117,16 @@ export function SceneCanvas({
               far: 500,
             }}
             dpr={[1, 2]}
-            shadows
+            shadows="percentage"
             style={{ width: '100%', height: '100%', background: '#00000a' }}
           >
             <Suspense fallback={<LoadingFallback />}>
               <MissionScene
                 target={target}
                 progress={scene.animFrame.progress}
+                followSpacecraft={followSpacecraft}
+                viewpoint={viewpoint}
+                zoomLevel={zoomLevel}
                 isThrusting={isThrusting}
                 showTrajectory
                 onObjectSelect={setSelectedObject}
@@ -125,6 +138,17 @@ export function SceneCanvas({
             animFrame={scene.animFrame}
             targetName={targetName}
             batteryCapacityWh={batteryCapacityWh}
+            followSpacecraft={followSpacecraft}
+            viewpoint={viewpoint}
+            showEarthView={target === 'Moon' || target === 'Mars'}
+            onToggleFollow={() => setFollowSpacecraft((value) => !value)}
+            onViewpointChange={(nextViewpoint) => {
+              setViewpoint(nextViewpoint);
+              setZoomLevel(0);
+              setFollowSpacecraft(false);
+            }}
+            onZoomIn={() => setZoomLevel((level) => Math.min(5, level + 1))}
+            onZoomOut={() => setZoomLevel((level) => Math.max(-5, level - 1))}
           />
           {selectedObject && (
             <aside className="scene-object-card" aria-live="polite">
@@ -139,6 +163,54 @@ export function SceneCanvas({
               <span className="scene-hud__label">SELECTED OBJECT</span>
               <strong>{selectedObject.name}</strong>
               <p>{selectedObject.description}</p>
+              {selectedObject.name === 'Mission spacecraft' && (
+                <dl className="scene-object-card__details">
+                  <div>
+                    <dt>Destination</dt>
+                    <dd>{targetName}</dd>
+                  </div>
+                  <div>
+                    <dt>Phase</dt>
+                    <dd>{telemetry?.phase ?? scene.animFrame.phase}</dd>
+                  </div>
+                  <div>
+                    <dt>Mission start</dt>
+                    <dd>{formatMissionTime(simulation?.telemetry[0]?.elapsedSeconds ?? 0)}</dd>
+                  </div>
+                  <div>
+                    <dt>Elapsed</dt>
+                    <dd>{formatMissionTime(telemetry?.elapsedSeconds ?? 0)}</dd>
+                  </div>
+                  <div>
+                    <dt>Run end</dt>
+                    <dd>{formatMissionTime(simulation?.finalState.elapsedSeconds ?? 0)}</dd>
+                  </div>
+                  {telemetry && (
+                    <>
+                      <div>
+                        <dt>Battery</dt>
+                        <dd>{telemetry.batteryWh.toFixed(0)} Wh</dd>
+                      </div>
+                      <div>
+                        <dt>Propellant</dt>
+                        <dd>{telemetry.propellantKg.toFixed(1)} kg</dd>
+                      </div>
+                      <div>
+                        <dt>Delta-v reserve</dt>
+                        <dd>{telemetry.deltaVReserveMs.toFixed(0)} m/s</dd>
+                      </div>
+                      <div>
+                        <dt>Communication</dt>
+                        <dd>{telemetry.communicationAvailable ? 'Available' : 'Unavailable'}</dd>
+                      </div>
+                    </>
+                  )}
+                  <div>
+                    <dt>Trajectory data</dt>
+                    <dd>Illustrative orbit; no position/velocity in current simulation</dd>
+                  </div>
+                </dl>
+              )}
             </aside>
           )}
         </CanvasErrorBoundary>
@@ -149,10 +221,13 @@ export function SceneCanvas({
         totalFrames={scene.totalFrames}
         isPlaying={scene.isPlaying}
         currentPhase={scene.animFrame.phase}
+        telemetry={simulation?.telemetry ?? []}
+        playbackSpeed={scene.playbackSpeed}
         play={scene.play}
         pause={scene.pause}
         reset={scene.reset}
         seekTo={scene.seekTo}
+        setPlaybackSpeed={scene.setPlaybackSpeed}
       />
     </div>
   );

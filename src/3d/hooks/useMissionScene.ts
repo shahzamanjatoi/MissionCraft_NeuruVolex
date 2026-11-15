@@ -1,19 +1,20 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { MissionRunOutput } from '../../simulation/missionRunner';
-import type { AnimationFrame } from '../types/scene';
+import type { AnimationFrame, PlaybackSpeed } from '../types/scene';
 import type { MissionPhase } from '../../types/simulation';
-
-const FRAME_INTERVAL_MS = 110; // ms between telemetry frames during playback
+import { getPlaybackFrameInterval } from '../utils/missionPlayback';
 
 export interface UseMissionSceneReturn {
   animFrame: AnimationFrame;
   isPlaying: boolean;
   frameIndex: number;
   totalFrames: number;
+  playbackSpeed: PlaybackSpeed;
   play: () => void;
   pause: () => void;
   reset: () => void;
   seekTo: (index: number) => void;
+  setPlaybackSpeed: (speed: PlaybackSpeed) => void;
 }
 
 export function useMissionScene(
@@ -23,6 +24,7 @@ export function useMissionScene(
 
   const [frameIndex, setFrameIndex] = useState(0);
   const [isPlaying, setIsPlaying]   = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
 
   // ── Playback interval ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -36,10 +38,10 @@ export function useMissionScene(
         }
         return prev + 1;
       });
-    }, FRAME_INTERVAL_MS);
+    }, getPlaybackFrameInterval(playbackSpeed));
 
     return () => clearInterval(id);
-  }, [isPlaying, totalFrames]);
+  }, [isPlaying, playbackSpeed, totalFrames]);
 
   // ── Controls ─────────────────────────────────────────────────────────────────
   const play = useCallback(() => {
@@ -61,7 +63,13 @@ export function useMissionScene(
   // ── Derived animation frame ───────────────────────────────────────────────────
   const currentTelemetry = simulation?.telemetry[frameIndex] ?? null;
   const phase: MissionPhase = currentTelemetry?.phase ?? 'launch';
-  const progress = totalFrames > 1 ? frameIndex / (totalFrames - 1) : 0;
+  const missionStartSeconds = simulation?.telemetry[0]?.elapsedSeconds ?? 0;
+  const missionEndSeconds =
+    simulation?.telemetry[totalFrames - 1]?.elapsedSeconds ?? missionStartSeconds;
+  const missionDurationSeconds = missionEndSeconds - missionStartSeconds;
+  const progress = currentTelemetry && missionDurationSeconds > 0
+    ? (currentTelemetry.elapsedSeconds - missionStartSeconds) / missionDurationSeconds
+    : 0;
 
   const animFrame: AnimationFrame = {
     frameIndex,
@@ -75,9 +83,11 @@ export function useMissionScene(
     isPlaying,
     frameIndex,
     totalFrames,
+    playbackSpeed,
     play,
     pause,
     reset,
     seekTo,
+    setPlaybackSpeed,
   };
 }

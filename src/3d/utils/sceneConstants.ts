@@ -28,6 +28,13 @@ export const CAMERA_PRESETS: Record<SceneTarget, [number, number, number]> = {
   Mars: [0, 10, 32],
 };
 
+export const EARTH_POSITIONS: Record<SceneTarget, [number, number, number]> = {
+  LEO: [0, 0, 0],
+  GEO: [0, 0, 0],
+  Moon: [-5.5, 0, 0],
+  Mars: [-9, 0, 0],
+};
+
 // ─── Sun (Directional Light) Position ────────────────────────────────────────
 
 export const SUN_POSITION: [number, number, number] = [80, 20, 40];
@@ -54,9 +61,9 @@ export const ATMOSPHERE = {
 
 export const TRAJECTORY = {
   SEGMENTS:   128,
-  COLOR:      '#38bdf8',
-  LINE_WIDTH: 1.2,
-  OPACITY:    0.5,
+  COLOR:      '#67e8f9',
+  LINE_WIDTH: 2.4,
+  OPACITY:    0.98,
 } as const;
 
 // ─── Spacecraft ───────────────────────────────────────────────────────────────

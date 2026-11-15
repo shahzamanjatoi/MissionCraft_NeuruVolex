@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { PlanetType } from '../types/scene';
@@ -35,6 +35,22 @@ const PLANET_RADIUS: Record<PlanetType, number> = {
   Mars:  SCENE.MARS_RADIUS,
 };
 
+const PLANET_LOADING_COLOR: Record<PlanetType, THREE.ColorRepresentation> = {
+  Earth: 0x315a78,
+  Moon: 0x777777,
+  Mars: 0x99503a,
+};
+const PLANET_NORMAL_SCALE = new THREE.Vector2(0.6, 0.6);
+const NIGHT_LIGHT_COLOR = new THREE.Color(0xffffff);
+
+function generateProceduralDay(type: PlanetType): THREE.Texture {
+  switch (type) {
+    case 'Earth': return generateEarthTexture();
+    case 'Moon': return generateMoonTexture();
+    case 'Mars': return generateMarsTexture();
+  }
+}
+
 /** Try to load a texture URL; resolve to null on error. */
 function tryLoadTexture(
   loader: THREE.TextureLoader,
@@ -45,7 +61,10 @@ function tryLoadTexture(
       url,
       (tex) => resolve(tex),
       undefined,
-      () => resolve(null),
+      (error) => {
+        console.error(`[3D] Failed to load planet texture: ${url}`, error);
+        resolve(null);
+      },
     );
   });
 }
@@ -61,26 +80,12 @@ export function Planet({
   const meshRef      = useRef<THREE.Mesh>(null);
   const cloudRef     = useRef<THREE.Mesh>(null);
 
-  // ── Procedural fallbacks (generated once) ───────────────────────────────────
-  const proceduralDay = useMemo(() => {
-    switch (type) {
-      case 'Earth': return generateEarthTexture();
-      case 'Moon':  return generateMoonTexture();
-      case 'Mars':  return generateMarsTexture();
-    }
-  }, [type]);
-
-  const proceduralNight = useMemo(
-    () => (type === 'Earth' ? generateEarthNightTexture() : null),
-    [type],
-  );
-
-  // ── Texture state (starts procedural, upgrades to real if available) ─────────
+  // ── Texture state (uses simple color while loading; procedural only on failure) ─
   const [loadedTextures, setLoadedTextures] =
     useState<LoadedPlanetTextures | null>(null);
   const activeTextures = loadedTextures?.type === type ? loadedTextures : null;
-  const dayTex = activeTextures?.day ?? proceduralDay;
-  const nightTex = activeTextures?.night ?? proceduralNight;
+  const dayTex = activeTextures?.day ?? null;
+  const nightTex = activeTextures?.night ?? null;
   const normalTex = activeTextures?.normal ?? null;
 
   // ── Async texture loading ─────────────────────────────────────────────────────
@@ -112,10 +117,15 @@ export function Planet({
         return;
       }
 
+      day ??= generateProceduralDay(type);
+      if (type === 'Earth' && !night) night = generateEarthNightTexture();
+
       if (day) day.colorSpace = THREE.SRGBColorSpace;
       if (night) night.colorSpace = THREE.SRGBColorSpace;
       if (normal) normal.colorSpace = THREE.NoColorSpace;
-      texturesToDispose = loaded;
+      texturesToDispose = [day, night, normal].filter(
+        (texture): texture is THREE.Texture => texture !== null,
+      );
       setLoadedTextures({ type, day, night, normal });
     }
 
@@ -125,14 +135,6 @@ export function Planet({
       texturesToDispose.forEach((texture) => texture.dispose());
     };
   }, [type]);
-
-  // ── Dispose textures on unmount ───────────────────────────────────────────────
-  useEffect(() => {
-    return () => {
-      proceduralDay.dispose();
-      proceduralNight?.dispose();
-    };
-  }, [proceduralDay, proceduralNight]);
 
   // ── Rotation animation ────────────────────────────────────────────────────────
   useFrame((_state, delta) => {
@@ -157,11 +159,13 @@ export function Planet({
       >
         <sphereGeometry args={[radius, 72, 36]} />
         <meshStandardMaterial
+          key={dayTex?.uuid ?? `${type}-loading`}
           map={dayTex}
+          color={dayTex ? 0xffffff : PLANET_LOADING_COLOR[type]}
           normalMap={normalTex ?? undefined}
-          normalScale={normalTex ? new THREE.Vector2(0.6, 0.6) : undefined}
+          normalScale={normalTex ? PLANET_NORMAL_SCALE : undefined}
           emissiveMap={nightTex ?? undefined}
-          emissive={nightTex ? new THREE.Color(0xffffff) : undefined}
+          emissive={nightTex ? NIGHT_LIGHT_COLOR : undefined}
           emissiveIntensity={nightTex ? 0.5 : 0}
           roughness={mat.roughness}
           metalness={mat.metalness}

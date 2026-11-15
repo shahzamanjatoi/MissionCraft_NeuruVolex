@@ -1,21 +1,21 @@
-import type { AnimationFrame } from '../types/scene';
-import type { MissionPhase } from '../../types/simulation';
+import type { AnimationFrame, CameraViewpoint } from '../types/scene';
+import { MISSION_PHASE_LABELS } from '../utils/missionPhaseDisplay';
 
-const PHASE_LABEL: Record<MissionPhase, string> = {
-  launch:        '🚀 Launch',
-  deployment:    '📡 Deployment',
-  transfer:      '↗ Transfer Burn',
-  arrival:       '🛬 Arrival',
-  operations:    '🔭 Science Operations',
-  communication: '📶 Downlinking Data',
-  completed:     '✅ Mission Complete',
-  failed:        '❌ Mission Failed',
-};
+function isCameraViewpoint(value: string): value is CameraViewpoint {
+  return value === 'overview' || value === 'destination' || value === 'earth';
+}
 
 interface TelemetryOverlayProps {
   animFrame: AnimationFrame;
   targetName: string;
   batteryCapacityWh: number;
+  followSpacecraft: boolean;
+  viewpoint: CameraViewpoint;
+  showEarthView: boolean;
+  onToggleFollow: () => void;
+  onViewpointChange: (viewpoint: CameraViewpoint) => void;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
 }
 
 /** HTML overlay rendered above the WebGL canvas showing live telemetry. */
@@ -23,6 +23,13 @@ export function TelemetryOverlay({
   animFrame,
   targetName,
   batteryCapacityWh,
+  followSpacecraft,
+  viewpoint,
+  showEarthView,
+  onToggleFollow,
+  onViewpointChange,
+  onZoomIn,
+  onZoomOut,
 }: TelemetryOverlayProps) {
   const tel = animFrame.telemetry;
 
@@ -43,7 +50,51 @@ export function TelemetryOverlay({
 
       {/* Phase */}
       <div className={`scene-hud__phase ${phaseOk ? '' : 'scene-hud__phase--fail'}`}>
-        {PHASE_LABEL[animFrame.phase]}
+        {MISSION_PHASE_LABELS[animFrame.phase]}
+      </div>
+
+      <div className="scene-hud__view-controls" role="group" aria-label="Scene controls">
+        <label className="scene-hud__view-select">
+          <span>View</span>
+          <select
+            aria-label="Camera viewpoint"
+            value={viewpoint}
+            onChange={(event) => {
+              const nextViewpoint = event.target.value;
+              if (isCameraViewpoint(nextViewpoint)) onViewpointChange(nextViewpoint);
+            }}
+          >
+            <option value="overview">Mission overview</option>
+            <option value="destination">Destination close-up</option>
+            {showEarthView && <option value="earth">Earth vantage</option>}
+          </select>
+        </label>
+        <button
+          type="button"
+          className="scene-hud__zoom"
+          onClick={onZoomOut}
+          aria-label="Zoom out"
+          title="Zoom out"
+        >
+          −
+        </button>
+        <button
+          type="button"
+          className="scene-hud__zoom"
+          onClick={onZoomIn}
+          aria-label="Zoom in"
+          title="Zoom in"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          className="scene-hud__follow"
+          aria-pressed={followSpacecraft}
+          onClick={onToggleFollow}
+        >
+          {followSpacecraft ? 'Following' : 'Follow'}
+        </button>
       </div>
 
       {/* Telemetry grid */}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { Planet } from '../objects/Planet';
 import { EarthAtmosphere } from '../objects/EarthAtmosphere';
@@ -6,14 +6,19 @@ import { Spacecraft } from '../objects/Spacecraft';
 import { TrajectoryLine } from '../objects/TrajectoryLine';
 import { StarField } from '../objects/StarField';
 import { SceneControls } from '../controls/SceneControls';
-import { SUN_POSITION } from '../utils/sceneConstants';
-import type { SceneTarget } from '../types/scene';
+import { EARTH_POSITIONS, SUN_POSITION } from '../utils/sceneConstants';
+import { getOrbitPoints } from '../utils/orbitPath';
+import { sampleIllustrativeTrajectory } from '../adapters/illustrativeTrajectoryAdapter';
+import type { CameraViewpoint, SceneTarget } from '../types/scene';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MissionSceneProps {
   target: SceneTarget;
   progress: number;
+  followSpacecraft: boolean;
+  viewpoint: CameraViewpoint;
+  zoomLevel: number;
   isThrusting?: boolean;
   showTrajectory?: boolean;
   onObjectSelect?: (selection: { name: string; description: string }) => void;
@@ -50,23 +55,24 @@ function getPlanetType(target: SceneTarget): 'Earth' | 'Moon' | 'Mars' {
 export function MissionScene({
   target,
   progress,
+  followSpacecraft,
+  viewpoint,
+  zoomLevel,
   isThrusting = false,
   showTrajectory = true,
   onObjectSelect,
 }: MissionSceneProps) {
   const planetType = getPlanetType(target);
-  const originEarthPosition: [number, number, number] =
-    target === 'Moon' ? [-5.5, 0, 0] : [-9, 0, 0];
+  const trajectoryPoints = useMemo(() => getOrbitPoints(target), [target]);
+  const trajectorySample = useMemo(
+    () => sampleIllustrativeTrajectory(target, progress),
+    [target, progress],
+  );
+  const spacecraftPositionRef = useRef(new THREE.Vector3());
+  const originEarthPosition = EARTH_POSITIONS[target];
 
   // Sun glow sphere — purely decorative, far away
-  const sunMat = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: new THREE.Color(1.6, 1.4, 0.9),
-        fog: false,
-      }),
-    [],
-  );
+  const sunColor = useMemo(() => new THREE.Color(1.6, 1.4, 0.9), []);
 
   return (
     <>
@@ -85,7 +91,7 @@ export function MissionScene({
       {/* Primary sun: bright directional light */}
       <directionalLight
         position={SUN_POSITION}
-        intensity={2.6}
+        intensity={1.0}
         color={0xfff5e0}
         castShadow
         shadow-mapSize={[2048, 2048]}
@@ -98,11 +104,12 @@ export function MissionScene({
       />
 
       {/* Point light co-located with sun so specular highlights work on curved surfaces */}
-      <pointLight position={SUN_POSITION} intensity={0.8} color={0xfff8e8} distance={300} />
+      <pointLight position={SUN_POSITION} intensity={0.15} color={0xfff8e8} distance={300} />
 
       {/* ── Sun glow sphere ──────────────────────────────────────────────── */}
-      <mesh position={SUN_POSITION} material={sunMat}>
+      <mesh position={SUN_POSITION}>
         <sphereGeometry args={[2.8, 16, 8]} />
+        <meshBasicMaterial color={sunColor} fog={false} />
       </mesh>
       {/* Halo around the sun (additive, slightly larger) */}
       <mesh position={SUN_POSITION}>
@@ -146,21 +153,30 @@ export function MissionScene({
       {planetType === 'Earth' && <EarthAtmosphere />}
 
       {/* ── Spacecraft orbit trajectory ──────────────────────────────────── */}
-      {showTrajectory && <TrajectoryLine target={target} progress={progress} />}
+      {showTrajectory && (
+        <TrajectoryLine points={trajectoryPoints} progress={progress} />
+      )}
 
       {/* ── Spacecraft ───────────────────────────────────────────────────── */}
       <Spacecraft
-        target={target}
-        progress={progress}
+        trajectoryPosition={trajectorySample.position}
+        trajectoryDirection={trajectorySample.direction}
+        positionRef={spacecraftPositionRef}
         isThrusting={isThrusting}
         onSelect={() => onObjectSelect?.({
           name: 'Mission spacecraft',
-          description: 'The spacecraft follows the mission replay. Use the timeline below to scrub through mission stages.',
+          description: 'Mission telemetry is shown below. The displayed orbit is an illustrative scene path because the simulation does not provide spacecraft coordinates or velocity.',
         })}
       />
 
       {/* ── Camera controls ──────────────────────────────────────────────── */}
-      <SceneControls />
+      <SceneControls
+        follow={followSpacecraft}
+        followTargetRef={spacecraftPositionRef}
+        target={target}
+        viewpoint={viewpoint}
+        zoomLevel={zoomLevel}
+      />
 
     </>
   );
