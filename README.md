@@ -1,234 +1,299 @@
-# MissionCraft 🚀
+<div align="center">
+
+# 🚀 MissionCraft
 
 ### Design. Simulate. Learn.
 
-**MissionCraft** is an interactive space mission design and simulation game developed by **Team Neuru Volex** for the **NASA Space Apps Challenge 2026**.
+**An interactive space-mission design game where every engineering choice changes the mission.**
 
-What would it take to design a spacecraft capable of reaching another destination in space? MissionCraft lets users explore that question by selecting a mission target, choosing a launch vehicle, configuring spacecraft subsystems, and evaluating whether their design can complete its mission.
+[![Live Demo](https://img.shields.io/badge/PLAY-Live%20Demo-00C8D7?style=for-the-badge&logo=vercel&logoColor=white)](https://mission-craft-neuru-volex-ten.vercel.app)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat&logo=vite&logoColor=white)](https://vite.dev/)
+[![NASA Space Apps](https://img.shields.io/badge/NASA%20Space%20Apps-2026-E03C31?style=flat&logo=nasa&logoColor=white)](https://www.spaceappschallenge.org/)
 
-Instead of simply learning about space missions theoretically, users can experiment with engineering decisions and see how those decisions affect mission performance.
+<br/>
 
----
+<img src="./new-horizons-4q-poster-v4.webp" alt="Spacecraft exploring a distant world — MissionCraft space visual" width="100%" />
 
-## 🌍 Project Overview
+<br/>
 
-MissionCraft turns space mission planning into an interactive learning experience.
+**[Launch MissionCraft](https://mission-craft-neuru-volex-ten.vercel.app) · [Explore the repository](https://github.com/shahzamanjatoi/MissionCraft_NeuruVolex) · [▶ Watch the included hero video](./public/hero.mp4)**
 
-Users progress through four main stages:
-
-1. **Choose a target:** Select a destination for the mission.
-2. **Select a rocket:** Choose a launch vehicle suitable for the mission.
-3. **Design a spacecraft:** Configure its propulsion, power, communication, and science systems.
-4. **Evaluate the mission:** Run the engineering evaluation and explore the mission results.
-
-Successful missions unlock more challenging destinations, encouraging users to improve their spacecraft designs and understand the trade-offs involved in space exploration.
-
-## ✨ Key Features
-
-### 1. Mission Destination Selection
-
-Choose from four mission destinations:
-
-- Low Earth Orbit (LEO)
-- Geostationary Orbit (GEO)
-- Lunar Orbit
-- Mars
-
-Destinations are progressively unlocked as users complete missions.
-
-### 2. Rocket Selection
-
-Explore launch vehicle options and understand how rocket capabilities, payload capacity, and launch costs influence mission planning.
-
-### 3. Spacecraft Configuration
-
-Build a spacecraft by configuring important parameters and subsystems, including:
-
-- Propulsion and engine selection
-- Antenna and communication systems
-- Scientific instruments
-- Spacecraft body mass
-- Propellant capacity
-- Solar panel area
-- Battery capacity
-
-A live evaluation panel helps users understand how their design performs against engineering requirements.
-
-### 4. Engineering Evaluation
-
-MissionCraft evaluates spacecraft designs across several engineering dimensions:
-
-| Parameter | Purpose |
-|---|---|
-| Delta-v | Evaluates whether the spacecraft has sufficient propulsion capability |
-| Mass | Checks spacecraft mass against launch vehicle capacity |
-| Power | Evaluates solar power generation against system requirements |
-| Battery | Checks whether stored energy can support the spacecraft during periods without sunlight |
-| Communications | Evaluates communication capability with Earth |
-| Cost | Estimates the mission's launch and spacecraft costs |
-
-The evaluation engine produces a mission score out of 100 based on the design's performance.
-
-### 5. Mission Simulation and Replay
-
-The mission simulation demonstrates how a spacecraft progresses through its mission and how operational events affect its performance.
-
-Simulation features include mission phases, telemetry, event history, and mission outcomes.
-
-The replay experience helps users follow mission progress rather than seeing only a final score.
-
-### 6. Interactive Mission Control
-
-Mission Control introduces operational decision-making into the simulation.
-
-During an eclipse, users can choose between:
-
-- **Maintain Full Load:** Keep spacecraft systems operating at full power.
-- **Conserve Power:** Reduce power consumption to preserve battery energy.
-
-The simulation evaluates how these decisions affect battery usage and mission performance.
-
-### 7. NASA Science and Learning Resources
-
-MissionCraft incorporates NASA-related educational resources and mission references to connect the game with real-world space exploration.
-
-The project includes a NASA resources section featuring reference materials and educational content, including a featured NASA Moon exploration video.
+</div>
 
 ---
 
-## 🛰️ NASA Data and References
+## 🌌 What is MissionCraft?
 
-MissionCraft draws inspiration from real space mission design concepts, NASA educational resources, and planetary science references.
+Space missions are built around trade-offs. A spacecraft needs enough propulsion to reach its destination, enough power to operate its instruments, enough battery capacity to survive eclipses, and a communication system capable of sending scientific data home.
 
-Resources used in the project include:
+**MissionCraft makes those decisions interactive.**
 
-- **NASA Design and Develop Science Missions:** Inspiration for the mission planning process.
-- **Concept Maturity Levels (CML):** Reference for structuring mission development stages.
-- **Mission Design Lab (MDL):** Inspiration for engineering evaluation criteria.
-- **GMAT:** Reference for orbital mechanics and mission analysis.
-- **NASA Mission Visualization resources:** Inspiration for visualizing space missions.
-- **CubeSat educational resources:** Reference for spacecraft design constraints.
-- **NASA Lunar Reconnaissance Orbiter (LRO):** Lunar science and exploration reference.
-- **Lunar Orbiter Laser Altimeter (LOLA):** Lunar surface and elevation data reference.
-- **DIVINER:** Lunar thermal mapping and science reference.
+Built by **Team Neuru Volex** for the **NASA Space Apps Challenge 2026**, MissionCraft is an educational space-mission design and simulation experience. Players choose a destination, select a launch vehicle, configure spacecraft systems, pass pre-flight checks, and follow a simulated mission through its operational phases.
 
-These resources help connect the educational experience to established space science and engineering concepts.
+The goal is not simply to get a high score. It is to understand *why* a mission design succeeds, struggles, or fails.
 
-## 🧰 Technology Stack
+## 🛰️ Explore the mission
 
-| Technology | Purpose |
+<div align="center">
+
+| 01 · DESIGN | 02 · LAUNCH | 03 · FLIGHT | 04 · DEBRIEF |
+|:---:|:---:|:---:|:---:|
+| Configure the mission | Check readiness | Follow the simulation | Learn from the outcome |
+| Target, rocket and spacecraft | GO / NO-GO checks | 3D scene and telemetry | Score, grade and next level |
+
+</div>
+
+### 1. Choose a destination
+
+Plan missions to four progressively challenging destinations:
+
+- **Low Earth Orbit (LEO)** — the starting mission.
+- **Geostationary Orbit (GEO)** — a higher Earth orbit used by many communication and weather satellites.
+- **The Moon** — a lunar-orbit mission and a central project scenario.
+- **Mars** — the most demanding destination in the current progression.
+
+Destinations unlock as missions are successfully completed.
+
+### 2. Build the spacecraft
+
+Choose a launch vehicle and configure the spacecraft to match the target.
+
+| System | Player choices |
 |---|---|
-| React | User interface |
-| TypeScript | Application logic and type safety |
-| Vite | Development and build tooling |
-| Vitest | Automated testing |
-| CSS | Interface styling |
-| NASA resources and datasets | Scientific and educational references |
+| Launch vehicle | Light, Medium and Heavy launchers |
+| Propulsion | Monopropellant, Bipropellant and Cryogenic engines |
+| Communications | Low-, medium- and high-gain antennas |
+| Science payload | Camera, laser altimeter, thermal radiometer, spectrometer and magnetometer |
+| Spacecraft parameters | Body mass, propellant mass, solar-array area and battery capacity |
 
-## 🚀 Getting Started
+A 3D spacecraft preview changes with the selected spacecraft configuration.
 
-### Prerequisites
+### 3. Pass the pre-flight checks
 
-- Node.js 20 or newer
-- npm
-- Git
+Before launch, MissionCraft evaluates the design and displays a **GO / NO-GO** status.
 
-### Installation
+The current engineering checks include:
 
-Clone the repository:
+- **Delta-v:** Is the available propulsion capability sufficient for the selected destination?
+- **Mass:** Is the spacecraft within the selected launch vehicle's payload capacity?
+- **Power:** Can the solar arrays generate enough power for the spacecraft load?
+- **Battery:** Is there enough usable stored energy for the modeled eclipse period?
+- **Communications:** Does the simplified link-budget calculation meet the minimum margin?
+- **Cost:** What is the estimated in-game mission cost?
+
+The engineering evaluation also produces a score and warnings that help players identify what needs to change.
+
+### 4. Follow the mission in 3D
+
+The flight experience includes an interactive Three.js scene with:
+
+- Earth, Moon or Mars as the selected destination body.
+- A star field and Sun lighting.
+- A spacecraft and orbital trajectory visualization.
+- Camera controls for orbiting, panning and zooming.
+- Selectable planetary objects with short information panels.
+- A mission timeline with play, pause, reset and seek controls.
+
+The telemetry overlay displays mission information such as:
+
+- Mission phase and elapsed time.
+- Battery charge.
+- Solar power generation.
+- Communication availability.
+- Eclipse status.
+- Science data transmitted.
+
+### 5. Replay, debrief and improve
+
+The mission simulation models a **24-hour mission window** and records telemetry as the spacecraft progresses through:
+
+`Launch → Deployment → Transfer → Arrival → Science Operations → Data Communication → Completion`
+
+The simulation can also model operational events such as:
+
+- Entering and leaving an eclipse.
+- Losing and restoring communication.
+- Battery depletion and mission failure conditions.
+- Science-data generation, storage and downlink.
+
+At the end, the debrief presents the mission outcome, score, grade, stars, failure reasons and progression status. Players can replay the flight, redesign the spacecraft or continue to the next unlocked destination.
+
+---
+
+## 🧮 Engineering model
+
+MissionCraft uses simplified educational calculations to make engineering trade-offs visible during gameplay.
+
+| Area | What the model evaluates |
+|---|---|
+| Propulsion | Available delta-v using the rocket equation |
+| Orbital mechanics | Hohmann-transfer and patched-conic-style delta-v estimates for destination targets |
+| Mass budget | Dry mass, instrument mass, propellant and launch payload margin |
+| Power budget | Solar generation, instrument load, housekeeping load and eclipse battery reserve |
+| Communications | A simplified X-band link budget and link margin |
+| Mission cost | Game-balance cost estimate based on launcher and spacecraft mass |
+| Mission score | Weighted score based on feasibility, engineering margins and estimated cost |
+
+The model is intentionally simplified for learning and gameplay. It is not a replacement for professional mission-design or flight-dynamics software.
+
+## 🔭 NASA science and mission references
+
+MissionCraft includes a science and reference area that connects the gameplay to real missions, instruments and mission-design resources. The simulator's reference carousel can show material relevant to the selected destination and design stage.
+
+### NASA resources included in the project
+
+- [Lunar Reconnaissance Orbiter (LRO)](https://science.nasa.gov/mission/lro/)
+- [LRO spacecraft and instruments](https://science.nasa.gov/mission/lro/spacecraft-and-instruments/)
+- [Lunar Orbiter Laser Altimeter (LOLA)](https://science.nasa.gov/mission/lro/lola/)
+- [Diviner Lunar Radiometer Experiment](https://www.jpl.nasa.gov/missions/diviner-lunar-radiometer-experiment-dlre/)
+- [NASA CubeSat Launch Initiative resources](https://www.nasa.gov/kennedy/launch-services-program/cubesat-launch-initiative/cubesat-launch-initiative-resources/)
+- [NASA Ames mission-design and concept-maturity resources](https://www.nasa.gov/ames-engineering/spaceflight-division/mission-design-center/about-our-studies/)
+
+The simulator also includes educational summaries of real missions such as Landsat 8, Hubble, GOES, Lunar Prospector, LRO, Mars Odyssey and Mars Reconnaissance Orbiter.
+
+**Important:** These are linked references and educational comparisons in the current source code. This repository does not demonstrate a live NASA API data-ingestion pipeline, and the engineering model should not be described as NASA-validated.
+
+---
+
+## 🧰 Built with
+
+<div align="center">
+
+| Front end | 3D and animation | Development and testing |
+|---|---|---|
+| React 19 | Three.js | Vite 8 |
+| TypeScript | React Three Fiber | Vitest |
+| Tailwind CSS 4 | Drei | ESLint |
+| Lucide React | Framer Motion | npm |
+
+</div>
+
+### How the code is organized
+
+```text
+MissionCraft/
+├── public/
+│   ├── hero.mp4
+│   ├── textures/
+│   └── team/
+├── src/
+│   ├── 3d/
+│   │   ├── components/       # 3D canvas, telemetry HUD and timeline
+│   │   ├── controls/         # Scene camera controls
+│   │   ├── hooks/            # Mission-scene playback state
+│   │   ├── objects/          # Planets, spacecraft, trajectory and stars
+│   │   ├── scenes/           # Assembled 3D mission scene
+│   │   └── utils/            # Scene and orbit helpers
+│   ├── components/           # Simulator phases and interface components
+│   ├── data/                 # Targets, launchers, instruments and NASA refs
+│   ├── engine/               # Propulsion, orbit, mass, power, comms and scoring
+│   ├── pages/                # Home, team and contact pages
+│   ├── simulation/           # Mission phases, events, replay and telemetry
+│   ├── store/                # Game state and reducer
+│   └── types/                # Shared TypeScript types
+├── package.json
+└── vite.config.ts
+```
+
+---
+
+## ⚡ Run it locally
+
+### Requirements
+
+- Node.js **22.12 or newer** (or a compatible newer supported release).
+- npm.
+- Git.
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/shahzamanjatoi/MissionCraft_NeuruVolex.git
-```
-
-Navigate to the project directory:
-
-```bash
 cd MissionCraft_NeuruVolex
 ```
 
-Install dependencies:
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-Start the development server:
+### 3. Start the development server
 
 ```bash
 npm run dev
 ```
 
-Open the local URL displayed in your terminal, usually:
+Open the local URL printed in the terminal (Vite commonly uses `http://localhost:5173`).
 
-```text
-http://localhost:5173
-```
+### Available commands
 
-### Available Commands
-
-| Command | Description |
+| Command | Purpose |
 |---|---|
-| `npm run dev` | Starts the development server |
-| `npm test` | Runs automated tests |
-| `npm run lint` | Checks code quality |
-| `npm run build` | Builds the production application |
-
-## 📁 Project Structure
-
-```text
-MissionCraft/
-├── public/          # Static assets
-├── src/
-│   ├── components/  # Application screens and UI components
-│   ├── data/        # Mission targets, rockets, instruments and resources
-│   ├── engine/      # Engineering calculations and evaluation
-│   ├── simulation/ # Mission simulation, events and telemetry
-│   ├── store/       # Application state management
-│   └── types/       # Shared TypeScript definitions
-├── package.json
-├── vite.config.ts
-└── README.md
-```
-
-## 🎯 Educational Objectives
-
-MissionCraft aims to make space mission engineering more accessible and engaging.
-
-Through interactive experimentation, users can:
-
-- Understand the relationship between spacecraft mass, propulsion, and delta-v.
-- Explore the importance of power generation and battery management.
-- Learn why communication systems matter during space missions.
-- Understand engineering trade-offs and mission constraints.
-- Experience how operational decisions can influence mission outcomes.
-- Explore real NASA missions and scientific resources.
-
-## ⚠️ Project Status and Limitations
-
-MissionCraft is an educational prototype, not a flight-qualified spacecraft engineering tool.
-
-Engineering calculations and simulation results are intended for learning and experimentation. They should not be treated as validated flight-planning results.
-
-Some advanced capabilities, including the completeness of orbital visualization and validation against professional mission analysis tools, depend on the final implementation.
-
-## 👥 Team
-
-**Team Neuru Volex**
-
-Developed for the NASA Space Apps Challenge 2026.
-
-- Shahzaman
-- Zara
-- Yousuf
-- Alisha
-
-## 🙌 Acknowledgements
-
-We acknowledge NASA and the educational and scientific resources that helped inspire MissionCraft.
-
-The project is built to encourage curiosity, experimentation, and learning about the engineering challenges behind space exploration.
+| `npm run dev` | Start the local development server |
+| `npm run build` | Type-check and create a production build |
+| `npm run preview` | Preview the production build locally |
+| `npm test` | Run the Vitest test suite |
+| `npm run lint` | Run ESLint |
 
 ---
 
-**MissionCraft — Design a mission. Make decisions. Explore space.** 🚀
+## 👩‍🚀 Meet the team
+
+**Team Neuru Volex** · NASA Space Apps Challenge 2026
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center">
+      <img src="./public/team/SHAHZAMAN.webp" width="130" alt="Shahzaman" /><br/>
+      <strong>Shahzaman</strong>
+    </td>
+    <td align="center">
+      <img src="./public/team/Alisha.webp" width="130" alt="Alisha" /><br/>
+      <strong>Alisha</strong>
+    </td>
+    <td align="center">
+      <img src="./public/team/yousaif.jpg" width="130" alt="Yousaif" /><br/>
+      <strong>Yousaif</strong>
+    </td>
+    <td align="center">
+      <img src="./public/team/Zara.webp" width="130" alt="Zara" /><br/>
+      <strong>Zara</strong>
+    </td>
+  </tr>
+</table>
+</div>
+
+---
+
+## ⚠️ Scope and limitations
+
+MissionCraft is an **educational prototype** designed to help users explore mission-design concepts.
+
+- Orbital and propulsion calculations are simplified estimates for gameplay.
+- The communications link budget is a simplified model, not a complete operational link analysis.
+- Mission-cost values are game-balance estimates, not real mission quotations.
+- The mission timeline is a simulated scenario, not a prediction of an actual spacecraft flight.
+- NASA resources are provided as references; their inclusion does not imply NASA endorsement of MissionCraft.
+- The current repository is a client-side application and does not include a production account system or server-side mission database.
+
+Do not use MissionCraft outputs for real spacecraft design, launch decisions or operational flight planning.
+
+## 🙏 Acknowledgements
+
+We are grateful to NASA and the public mission, instrument and educational resources that help make space science accessible. MissionCraft was created to encourage curiosity about the engineering decisions behind exploring our Solar System.
+
+---
+
+<div align="center">
+
+### Every mission starts with a design.
+
+**MissionCraft — Design. Simulate. Learn.** 🚀
+
+[**Play MissionCraft**](https://mission-craft-neuru-volex-ten.vercel.app) · [GitHub Repository](https://github.com/shahzamanjatoi/MissionCraft_NeuruVolex)
+
+</div>
