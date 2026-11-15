@@ -11,19 +11,20 @@ import {
 
 import {
   Activity,
+  Orbit,
+  Rocket,
   AlertTriangle,
   CheckCircle2,
   Crosshair,
   Fuel,
-  Orbit,
   Pause,
   Play,
   Radio,
   RotateCcw,
-  Rocket,
   Satellite,
   Zap,
-} from "../icons";
+  type LucideIcon,
+} from "lucide-react";
 
 // ----------------------------------
 // Types
@@ -123,7 +124,7 @@ function MetricCard({
   label: string;
   value: string;
   unit: string;
-  icon: typeof Activity;
+  icon: LucideIcon;
   color?: string;
 }) {
   return (
