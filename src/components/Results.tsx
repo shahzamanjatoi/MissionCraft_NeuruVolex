@@ -1,4 +1,6 @@
 ﻿
+﻿import { lazy, Suspense } from "react";
+import { useGame } from "../store/useGame";
 import { LaunchReplay } from "./LaunchReplay";
 import { useGame } from "../store/useGame";
 
@@ -8,6 +10,19 @@ function formatTime(seconds: number): string {
 
   return `${hours}h ${minutes}m`;
 }
+
+const SceneCanvas = lazy(() =>
+  import("../3d/components/SceneCanvas").then((module) => ({
+    default: module.SceneCanvas,
+  })),
+);
+
+const TARGET_NAME: Record<string, string> = {
+  LEO: "Low Earth Orbit",
+  GEO: "Geostationary Orbit",
+  Moon: "Moon",
+  Mars: "Mars",
+};
 
 export function Results() {
   const {
@@ -32,10 +47,35 @@ export function Results() {
 
   return (
     <section>
-      <h2>Mission Results</h2>
+      <h2 className="step-title">
+        <span className="step-num mono">04</span> Mission Results
+      </h2>
 
       <section>
         <h3>Engineering Evaluation</h3>
+      <h3>Engineering Evaluation</h3>
+      <p className={r.feasible ? "verdict good" : "verdict bad"}>
+        {r.feasible
+          ? "Engineering checks passed."
+          : "Engineering checks found problems."}
+      </p>
+
+      <div className="result-kpis">
+        <div><span>Target</span><strong className="mono">{state.design.target}</strong></div>
+        <div><span>Score</span><strong className="mono">{r.score}/100</strong></div>
+        <div><span>Cost</span><strong className="mono">${r.cost_musd}M</strong></div>
+      </div>
+
+      {r.warnings.length > 0 && (
+        <>
+          <h3>Engineering Warnings</h3>
+          <ul>
+            {r.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        </>
+      )}
 
         <p>
           Engineering checks:{" "}
@@ -136,6 +176,36 @@ export function Results() {
               {missionControlChoice === "conserve-power"
                 ? "Conserve Power"
                 : "Maintain Full Load"}
+          <section className="mission-visualization" aria-label="Interactive 3D mission visualization">
+            <div className="mission-visualization__heading">
+              <div>
+                <span className="mission-visualization__eyebrow">MISSION CONTROL / LIVE REPLAY</span>
+                <h3>Mission Visualization</h3>
+              </div>
+              <span className="mission-visualization__target mono">
+                {TARGET_NAME[state.design.target]}
+              </span>
+            </div>
+            <Suspense
+              fallback={
+                <div className="scene-loading" role="status">
+                  Initializing mission visualization…
+                </div>
+              }
+            >
+              <SceneCanvas
+                target={state.design.target}
+                simulation={simulation}
+                targetName={TARGET_NAME[state.design.target]}
+                batteryCapacityWh={state.design.spacecraft.batteryWh}
+              />
+            </Suspense>
+          </section>
+
+          <p>
+            Outcome:{" "}
+            <strong className="mono">
+              {simulation.summary.outcome.toUpperCase()}
             </strong>
           </p>
         ) : (
@@ -159,6 +229,13 @@ export function Results() {
           <p>
             Mission time:{" "}
             <strong>
+            Final phase:{" "}
+            <strong className="mono">{simulation.summary.phaseReached}</strong>
+          </p>
+
+          <p>
+            Simulated mission time:{" "}
+            <strong className="mono">
               {formatTime(simulation.finalState.elapsedSeconds)}
             </strong>
           </p>

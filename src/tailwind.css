@@ -1,0 +1,16 @@
+/*
+  Tailwind v4 — theme tokens + utilities only.
+
+  • Preflight (Tailwind's global reset) is NOT imported, so the hand-written
+    styles in index.css / App.css keep working unchanged.
+  • Auto source detection is OFF (source(none)): Tailwind only generates the
+    classes used in the files listed below. This stops Tailwind's own
+    `.container` utility from overriding the app's `.container` class.
+    When you use Tailwind classes in another file, add an @source line for it.
+*/
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css" source(none);
+
+@source "./pages/TeamPage.tsx";
+@source "./components/HowItWorks.tsx";
+@source "./components/MissionTiers.tsx";
