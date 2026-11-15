@@ -473,9 +473,7 @@ export function HomePage({ onNavigate }: { onNavigate: (page: PageId) => void })
         <div className="hero-video-overlay" />
 
         <div className="container hero-video-content">
-          <span className="hero-pill hero-anim" style={{ "--i": 0 } as CSSProperties}>
-            NASA Space Apps Challenge 2026 • Team Neuru Volex
-          </span>
+    
           <h1 className="hero-title">
             <span className="hero-word hero-anim" style={{ "--i": 1 } as CSSProperties}>
               Design.
