@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import "./simulator.css";
 import { GameProvider } from "./store/GameProvider";
@@ -16,7 +16,7 @@ import { Footer } from "./components/Footer";
 import { HomePage } from "./pages/HomePage";
 import { TeamPage } from "./pages/TeamPage";
 import { ContactPage } from "./pages/ContactPage";
-import { beep, setMasterVolume } from "./sfx";
+import { beep, chime, setMasterVolume, startSpaceTrack, stopSpaceTrack } from "./sfx";
 
 const RANKS = ["Cadet", "Flight Engineer", "Mission Specialist", "Flight Director", "Mission Commander"];
 
@@ -27,6 +27,14 @@ function SimulatorView() {
   const [quality, setQuality] = useState<Quality>("high");
   const [volume, setVolume] = useState(0.8);
   const [launching, setLaunching] = useState(false);
+
+  useEffect(() => {
+    if (phase === "debrief") chime();
+    if (phase === "flight") startSpaceTrack();
+    return () => {
+      if (phase === "flight") stopSpaceTrack();
+    };
+  }, [phase]);
 
   const rank = RANKS[Math.min(state.completed.length, RANKS.length - 1)];
 
