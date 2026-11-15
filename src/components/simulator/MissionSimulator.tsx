@@ -14,10 +14,8 @@ import {
   Activity,
   AlertTriangle,
   CheckCircle2,
-  ChevronRight,
   Crosshair,
   Fuel,
-  Gauge,
   Orbit,
   Pause,
   Play,
@@ -25,8 +23,6 @@ import {
   RotateCcw,
   Rocket,
   Satellite,
-  ShieldCheck,
-  Signal,
   Zap,
 } from "lucide-react";
 
@@ -74,12 +70,13 @@ type Props = {
 // Helpers
 // ----------------------------------
 
-const clamp = (value: number) =>
+const clamp = (value: number): number =>
   Math.max(0, Math.min(100, value));
 
-const formatTime = (seconds: number) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+const formatTime = (seconds: number): string => {
+  const safeSeconds = Math.max(0, Math.floor(seconds));
+  const mins = Math.floor(safeSeconds / 60);
+  const secs = safeSeconds % 60;
 
   return `${String(mins).padStart(2, "0")}:${String(
     secs
@@ -87,7 +84,7 @@ const formatTime = (seconds: number) => {
 };
 
 // ----------------------------------
-// Status indicator
+// Status Indicator
 // ----------------------------------
 
 function StatusIndicator({
@@ -102,10 +99,11 @@ function StatusIndicator({
       <span
         className={`h-2 w-2 rounded-full ${
           active
-            ? "bg-emerald-400 animate-pulse"
+            ? "animate-pulse bg-emerald-400"
             : "bg-amber-400"
         }`}
       />
+
       <span className="text-[10px] font-bold tracking-widest text-emerald-300">
         {label}
       </span>
@@ -114,7 +112,7 @@ function StatusIndicator({
 }
 
 // ----------------------------------
-// Telemetry card
+// Telemetry Metric Card
 // ----------------------------------
 
 function MetricCard({
@@ -134,12 +132,14 @@ function MetricCard({
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
       className="rounded-xl border border-cyan-500/20 bg-gray-900/70 p-4 backdrop-blur-xl"
     >
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-bold tracking-widest text-gray-500">
           {label}
         </span>
+
         <Icon size={16} className={color} />
       </div>
 
@@ -147,7 +147,10 @@ function MetricCard({
         <span className={`font-mono text-2xl font-bold ${color}`}>
           {value}
         </span>
-        <span className="text-xs text-gray-500">{unit}</span>
+
+        <span className="text-xs text-gray-500">
+          {unit}
+        </span>
       </div>
 
       <div className="mt-3 h-px bg-gradient-to-r from-cyan-500/40 to-transparent" />
@@ -156,7 +159,7 @@ function MetricCard({
 }
 
 // ----------------------------------
-// Circular gauge
+// Circular Gauge
 // ----------------------------------
 
 function OrbitalGauge({
@@ -176,10 +179,7 @@ function OrbitalGauge({
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="relative h-32 w-32">
-        <svg
-          viewBox="0 0 100 100"
-          className="-rotate-90"
-        >
+        <svg viewBox="0 0 100 100" className="-rotate-90">
           <circle
             cx="50"
             cy="50"
@@ -211,6 +211,7 @@ function OrbitalGauge({
           <span className="font-mono text-2xl font-bold text-white">
             {normalized.toFixed(0)}
           </span>
+
           <span className="text-[9px] tracking-widest text-gray-500">
             {unit}
           </span>
@@ -225,7 +226,7 @@ function OrbitalGauge({
 }
 
 // ----------------------------------
-// Delta-V budget
+// Delta-V Budget
 // ----------------------------------
 
 function DeltaVBudget({
@@ -236,14 +237,18 @@ function DeltaVBudget({
   available: number;
 }) {
   const remaining = Math.max(0, available - used);
+
   const percentage =
-    available > 0 ? clamp((used / available) * 100) : 0;
+    available > 0
+      ? clamp((used / available) * 100)
+      : 0;
 
   return (
     <section className="rounded-xl border border-cyan-500/20 bg-gray-900/70 p-5 backdrop-blur-xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Zap className="text-cyan-400" size={18} />
+
           <h3 className="text-sm font-bold text-white">
             DELTA-V BUDGET
           </h3>
@@ -289,7 +294,7 @@ function DeltaVBudget({
 }
 
 // ----------------------------------
-// Launch sequence
+// Launch Sequence
 // ----------------------------------
 
 function LaunchSequence({
@@ -301,12 +306,12 @@ function LaunchSequence({
   onLaunch: () => void;
   onAbort: () => void;
 }) {
-  const [countdown, setCountdown] = useState<number | null>(
-    null
-  );
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   useEffect(() => {
-    if (countdown === null || countdown <= 0) return;
+    if (countdown === null || countdown <= 0) {
+      return;
+    }
 
     const timer = window.setTimeout(() => {
       setCountdown((current) =>
@@ -325,13 +330,21 @@ function LaunchSequence({
   }, [countdown, onLaunch]);
 
   const startCountdown = () => {
-    if (!running) setCountdown(3);
+    if (!running && countdown === null) {
+      setCountdown(3);
+    }
+  };
+
+  const abortMission = () => {
+    setCountdown(null);
+    onAbort();
   };
 
   return (
     <div className="rounded-2xl border border-cyan-500/30 bg-gray-900/80 p-6 text-center shadow-[0_0_30px_rgba(34,211,238,0.08)]">
       <div className="flex items-center justify-center gap-2">
         <Rocket className="text-cyan-400" />
+
         <h3 className="text-sm font-bold tracking-[0.2em] text-white">
           LAUNCH AUTHORIZATION
         </h3>
@@ -346,7 +359,7 @@ function LaunchSequence({
             exit={{ opacity: 0, scale: 1.5 }}
             className="my-5 font-mono text-7xl font-black text-cyan-400"
           >
-            {countdown === 0 ? "GO" : countdown}
+            {countdown}
           </motion.div>
         ) : (
           <motion.p
@@ -365,22 +378,28 @@ function LaunchSequence({
       <div className="flex flex-wrap justify-center gap-3">
         {!running && (
           <button
+            type="button"
             onClick={startCountdown}
             disabled={countdown !== null}
             className="flex items-center gap-2 rounded-lg bg-cyan-500 px-6 py-3 text-sm font-black text-gray-950 transition hover:bg-cyan-300 disabled:opacity-50"
           >
             <Play size={16} />
-            INITIATE LAUNCH
+
+            {countdown !== null
+              ? "LAUNCH COUNTDOWN"
+              : "INITIATE LAUNCH"}
           </button>
         )}
 
-        {running && (
+        {(running || countdown !== null) && (
           <button
-            onClick={onAbort}
+            type="button"
+            onClick={abortMission}
             className="flex items-center gap-2 rounded-lg border border-red-500/40 px-6 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10"
           >
             <Pause size={16} />
-            ABORT MISSION
+
+            {running ? "ABORT MISSION" : "CANCEL COUNTDOWN"}
           </button>
         )}
       </div>
@@ -389,7 +408,7 @@ function LaunchSequence({
 }
 
 // ----------------------------------
-// Mission result modal
+// Mission Result Modal
 // ----------------------------------
 
 function MissionResultModal({
@@ -402,6 +421,14 @@ function MissionResultModal({
   onReplay: () => void;
 }) {
   const success = result.outcome === "success";
+
+  const metrics = [
+    ["ALTITUDE", `${result.achievedAltitudeKm} km`],
+    ["VELOCITY", `${result.finalVelocityKmS} km/s`],
+    ["FUEL REMAINING", `${result.fuelRemainingPercent}%`],
+    ["DELTA-V USED", `${result.deltaVUsed} m/s`],
+    ["DURATION", formatTime(result.durationSeconds)],
+  ];
 
   return (
     <motion.div
@@ -417,13 +444,13 @@ function MissionResultModal({
         className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-cyan-500/30 bg-[#0b1220] p-7 shadow-[0_0_80px_rgba(34,211,238,0.15)]"
       >
         {success &&
-          Array.from({ length: 16 }).map((_, i) => (
+          Array.from({ length: 16 }).map((_, index) => (
             <motion.span
-              key={i}
+              key={index}
               className="pointer-events-none absolute h-1.5 w-1.5 rounded-full bg-cyan-300"
               style={{
-                left: `${(i * 37) % 100}%`,
-                top: `${(i * 23) % 100}%`,
+                left: `${(index * 37) % 100}%`,
+                top: `${(index * 23) % 100}%`,
               }}
               animate={{
                 y: [0, -35, 15],
@@ -433,7 +460,7 @@ function MissionResultModal({
               transition={{
                 duration: 2,
                 repeat: Infinity,
-                delay: i * 0.12,
+                delay: index * 0.12,
               }}
             />
           ))}
@@ -441,15 +468,9 @@ function MissionResultModal({
         <div className="relative z-10">
           <div className="mb-5 flex justify-center">
             {success ? (
-              <CheckCircle2
-                size={60}
-                className="text-emerald-400"
-              />
+              <CheckCircle2 size={60} className="text-emerald-400" />
             ) : (
-              <AlertTriangle
-                size={60}
-                className="text-red-400"
-              />
+              <AlertTriangle size={60} className="text-red-400" />
             )}
           </div>
 
@@ -466,13 +487,7 @@ function MissionResultModal({
           </p>
 
           <div className="my-7 grid grid-cols-2 gap-3">
-            {[
-              ["ALTITUDE", `${result.achievedAltitudeKm} km`],
-              ["VELOCITY", `${result.finalVelocityKmS} km/s`],
-              ["FUEL REMAINING", `${result.fuelRemainingPercent}%`],
-              ["DELTA-V USED", `${result.deltaVUsed} m/s`],
-              ["DURATION", formatTime(result.durationSeconds)],
-            ].map(([label, value]) => (
+            {metrics.map(([label, value]) => (
               <div
                 key={label}
                 className="rounded-lg border border-white/10 bg-white/[0.03] p-3"
@@ -480,6 +495,7 @@ function MissionResultModal({
                 <p className="text-[10px] tracking-widest text-gray-500">
                   {label}
                 </p>
+
                 <p className="mt-2 font-mono text-lg text-white">
                   {value}
                 </p>
@@ -489,6 +505,7 @@ function MissionResultModal({
 
           <div className="flex flex-wrap gap-3">
             <button
+              type="button"
               onClick={onReplay}
               className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-cyan-500 px-4 py-3 text-sm font-bold text-black hover:bg-cyan-300"
             >
@@ -497,6 +514,7 @@ function MissionResultModal({
             </button>
 
             <button
+              type="button"
               onClick={onClose}
               className="rounded-lg border border-white/10 px-5 py-3 text-sm text-gray-300 hover:bg-white/5"
             >
@@ -510,7 +528,7 @@ function MissionResultModal({
 }
 
 // ----------------------------------
-// Main mission simulator
+// Main Mission Simulator
 // ----------------------------------
 
 export default function MissionSimulator({
@@ -527,9 +545,14 @@ export default function MissionSimulator({
     "overview" | "telemetry" | "3d"
   >("overview");
 
-  const [showResult, setShowResult] = useState(true);
+  const [dismissedResult, setDismissedResult] =
+    useState<MissionResult | null>(null);
 
   const running = telemetry.status === "running";
+
+  const showResult =
+    missionResult != null &&
+    missionResult !== dismissedResult;
 
   const tabs = [
     { id: "overview", label: "OVERVIEW" },
@@ -546,6 +569,7 @@ export default function MissionSimulator({
         <div>
           <div className="flex items-center gap-2 text-cyan-400">
             <Satellite size={20} />
+
             <span className="text-xs font-black tracking-[0.25em]">
               MISSIONCRAFT / FLIGHT OPERATIONS
             </span>
@@ -562,8 +586,24 @@ export default function MissionSimulator({
 
         <div className="flex flex-wrap gap-2">
           <StatusIndicator
-            label={running ? "MISSION ACTIVE" : "SYSTEM NOMINAL"}
+            label={
+              running
+                ? "MISSION ACTIVE"
+                : telemetry.status === "paused"
+                  ? "MISSION PAUSED"
+                  : telemetry.status === "success"
+                    ? "MISSION SUCCESS"
+                    : telemetry.status === "failure"
+                      ? "MISSION FAILED"
+                      : "SYSTEM NOMINAL"
+            }
+            active={
+              running ||
+              telemetry.status === "ready" ||
+              telemetry.status === "success"
+            }
           />
+
           <StatusIndicator label="TELEMETRY LOCKED" />
         </div>
       </header>
@@ -573,6 +613,7 @@ export default function MissionSimulator({
       <nav className="mb-6 flex gap-2 border-b border-white/10">
         {tabs.map((tab) => (
           <button
+            type="button"
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`relative px-4 py-3 text-xs font-bold tracking-widest ${
@@ -593,7 +634,7 @@ export default function MissionSimulator({
         ))}
       </nav>
 
-      {/* Animated content */}
+      {/* Animated Content */}
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -604,18 +645,21 @@ export default function MissionSimulator({
           transition={{ duration: 0.25 }}
         >
 
+          {/* Overview */}
+
           {activeTab === "overview" && (
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
 
               <div className="space-y-5 xl:col-span-2">
 
-                {/* Spacecraft visual */}
+                {/* Orbital Tracking */}
 
                 <section className="relative min-h-[280px] overflow-hidden rounded-2xl border border-cyan-500/20 bg-[#101b2a]">
 
                   <div className="absolute inset-0 opacity-20">
-                    <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400 animate-[spin_30s_linear_infinite]" />
-                    <div className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-cyan-400 animate-[spin_20s_linear_infinite_reverse]" />
+                    <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 animate-[spin_30s_linear_infinite] rounded-full border border-cyan-400" />
+
+                    <div className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 animate-[spin_20s_linear_infinite_reverse] rounded-full border border-dashed border-cyan-400" />
                   </div>
 
                   <div className="relative z-10 flex items-center justify-between p-5">
@@ -623,6 +667,7 @@ export default function MissionSimulator({
                       <p className="text-[10px] tracking-widest text-cyan-400">
                         ORBITAL TRACKING
                       </p>
+
                       <p className="mt-1 text-sm font-bold">
                         {telemetry.orbitLabel}
                       </p>
@@ -655,6 +700,7 @@ export default function MissionSimulator({
                     <span className="text-[10px] text-gray-500">
                       ORBITAL RADAR / ACTIVE
                     </span>
+
                     <span className="text-[10px] text-cyan-400">
                       TRACKING LOCK
                     </span>
@@ -693,7 +739,7 @@ export default function MissionSimulator({
                 />
               </div>
 
-              {/* Right control panel */}
+              {/* Right Control Panel */}
 
               <aside className="space-y-5">
 
@@ -731,28 +777,41 @@ export default function MissionSimulator({
 
                   <div className="space-y-3 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">MISSION TIME</span>
+                      <span className="text-gray-500">
+                        MISSION TIME
+                      </span>
+
                       <span className="font-mono text-cyan-400">
                         {formatTime(telemetry.elapsedSeconds)}
                       </span>
                     </div>
 
                     <div className="flex justify-between">
-                      <span className="text-gray-500">FUEL BURN</span>
+                      <span className="text-gray-500">
+                        FUEL BURN
+                      </span>
+
                       <span className="font-mono text-white">
                         {telemetry.fuelBurnKgS.toFixed(2)} kg/s
                       </span>
                     </div>
 
                     <div className="flex justify-between">
-                      <span className="text-gray-500">PROPULSION</span>
-                      <span className="text-emerald-400">ONLINE</span>
+                      <span className="text-gray-500">
+                        PROPULSION
+                      </span>
+
+                      <span className="text-emerald-400">
+                        ONLINE
+                      </span>
                     </div>
                   </div>
                 </section>
               </aside>
             </div>
           )}
+
+          {/* Telemetry */}
 
           {activeTab === "telemetry" && (
             <div className="grid gap-5 md:grid-cols-2">
@@ -793,17 +852,23 @@ export default function MissionSimulator({
             </div>
           )}
 
+          {/* 3D View */}
+
           {activeTab === "3d" && (
             <section className="min-h-[480px] overflow-hidden rounded-2xl border border-cyan-500/20 bg-gray-900/70">
               {threeDView ?? (
                 <div className="flex min-h-[480px] flex-col items-center justify-center gap-4 p-6 text-center">
-                  <Satellite size={48} className="text-cyan-400" />
+                  <Satellite
+                    size={48}
+                    className="text-cyan-400"
+                  />
+
                   <h3 className="font-bold tracking-widest">
                     3D SPACECRAFT VIEW
                   </h3>
+
                   <p className="max-w-md text-sm text-gray-500">
-                    Mount your existing Three.js or React Three Fiber
-                    spacecraft scene here.
+                    Mount your existing Three.js or React Three Fiber spacecraft scene here.
                   </p>
                 </div>
               )}
@@ -813,13 +878,14 @@ export default function MissionSimulator({
         </motion.div>
       </AnimatePresence>
 
-      {/* Mission progress */}
+      {/* Mission Progress */}
 
       <section className="mt-6 rounded-xl border border-white/10 bg-gray-900/70 p-5">
         <div className="mb-3 flex justify-between">
           <span className="text-xs font-bold tracking-widest text-gray-400">
             MISSION OBJECTIVE PROGRESS
           </span>
+
           <span className="font-mono text-sm text-cyan-400">
             {clamp(telemetry.progress).toFixed(0)}%
           </span>
@@ -827,27 +893,33 @@ export default function MissionSimulator({
 
         <div className="h-2 overflow-hidden rounded-full bg-gray-800">
           <motion.div
-            animate={{ width: `${clamp(telemetry.progress)}%` }}
+            animate={{
+              width: `${clamp(telemetry.progress)}%`,
+            }}
             transition={{ duration: 0.6 }}
             className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400"
           />
         </div>
       </section>
 
-      {/* Result modal */}
+      {/* Mission Result Modal */}
 
       <AnimatePresence>
         {missionResult && showResult && (
           <MissionResultModal
             result={missionResult}
-            onClose={() => setShowResult(false)}
+            onClose={() =>
+              setDismissedResult(missionResult)
+            }
             onReplay={() => {
-              setShowResult(false);
+              setDismissedResult(missionResult);
               onReplay();
             }}
           />
         )}
       </AnimatePresence>
+
+      {/* Footer */}
 
       <footer className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5 text-[10px] tracking-widest text-gray-600">
         <span>MISSIONCRAFT · TEAM NEURU VOLEX</span>
