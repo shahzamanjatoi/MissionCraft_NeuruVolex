@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { MissionScene } from '../scenes/MissionScene';
 import { TelemetryOverlay } from './TelemetryOverlay';
 import { MissionTimeline } from './MissionTimeline';
-import { useMissionScene } from '../hooks/useMissionScene';
+import { useMissionScene, type UseMissionSceneReturn } from '../hooks/useMissionScene';
 import { CAMERA_PRESETS } from '../utils/sceneConstants';
 import type { SceneTarget } from '../types/scene';
 import type { MissionRunOutput } from '../../simulation/missionRunner';
@@ -16,6 +16,10 @@ interface SceneCanvasProps {
   simulation: MissionRunOutput | null;
   targetName: string;
   batteryCapacityWh: number;
+  /** 'low' lowers pixel ratio and disables shadows. */
+  quality?: 'high' | 'low';
+  /** Optional side panel rendered next to the canvas (used by the Flight phase). */
+  renderAside?: (scene: UseMissionSceneReturn) => ReactNode;
 }
 
 // ─── Loading fallback rendered inside the Canvas ──────────────────────────────
@@ -76,6 +80,8 @@ export function SceneCanvas({
   simulation,
   targetName,
   batteryCapacityWh,
+  quality = 'high',
+  renderAside,
 }: SceneCanvasProps) {
   const scene = useMissionScene(simulation);
   const camPos = CAMERA_PRESETS[target];
@@ -89,7 +95,7 @@ export function SceneCanvas({
     scene.animFrame.phase === 'launch' ||
     scene.animFrame.phase === 'transfer';
 
-  return (
+  const main = (
     <div className="scene-layout">
       <div className="scene-container">
         <CanvasErrorBoundary>
@@ -106,8 +112,8 @@ export function SceneCanvas({
               near: 0.1,
               far: 500,
             }}
-            dpr={[1, 2]}
-            shadows
+            dpr={quality === 'low' ? 1 : [1, 2]}
+            shadows={quality !== 'low'}
             style={{ width: '100%', height: '100%', background: '#00000a' }}
           >
             <Suspense fallback={<LoadingFallback />}>
@@ -155,5 +161,14 @@ export function SceneCanvas({
         seekTo={scene.seekTo}
       />
     </div>
+  );
+
+  return renderAside ? (
+    <div className="flight-grid">
+      {main}
+      <aside className="flight-aside">{renderAside(scene)}</aside>
+    </div>
+  ) : (
+    main
   );
 }

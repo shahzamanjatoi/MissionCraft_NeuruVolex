@@ -91,3 +91,31 @@ export function SpecMeter({ label, value, text }: { label: string; value: number
     </span>
   );
 }
+
+/** Shared header for each simulator step. */
+export function StepHead({ n, title, hint }: { n: number; title: string; hint?: string }) {
+  return (
+    <div className="sim-step-head">
+      <span className="sim-step-head__n mono">Step {n} of 4</span>
+      <h2 className="step-title">{title}</h2>
+      {hint && <p className="hint">{hint}</p>}
+    </div>
+  );
+}
+
+export function LockIcon() {
+  return (
+    <svg viewBox="0 0 16 16" className="sim-lock" aria-hidden="true">
+      <rect x="3" y="7" width="10" height="7" rx="1.6" />
+      <path d="M5.5 7V5a2.5 2.5 0 015 0v2" />
+    </svg>
+  );
+}
+
+export function CheckMark() {
+  return (
+    <svg viewBox="0 0 16 16" className="sim-check" aria-hidden="true">
+      <path d="M3.5 8.5l3 3 6-7" />
+    </svg>
+  );
+}

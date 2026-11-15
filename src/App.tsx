@@ -1,75 +1,105 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import "./App.css";
+import "./simulator.css";
 import { GameProvider } from "./store/GameProvider";
 import { useGame } from "./store/useGame";
-import { STEP_ORDER } from "./store/gameReducer";
-import { TargetPicker } from "./components/TargetPicker";
-import { RocketPicker } from "./components/RocketPicker";
-import { SpacecraftBuilder } from "./components/SpacecraftBuilder";
-import { ScoreBoard } from "./components/ScoreBoard";
-import { Results } from "./components/Results";
+import { LaunchCountdown } from "./components/LaunchCountdown";
+import { DesignDesk } from "./components/DesignDesk";
+import { LaunchPhase } from "./components/LaunchPhase";
+import { FlightPhase } from "./components/FlightPhase";
+import { DebriefPhase } from "./components/DebriefPhase";
+import { PhaseBar, PHASES, type Phase } from "./components/PhaseBar";
+import type { Quality } from "./components/Scene3D";
 import { NasaResources } from "./components/NasaResources";
 import { Navbar, type PageId } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { HomePage } from "./pages/HomePage";
 import { TeamPage } from "./pages/TeamPage";
 import { ContactPage } from "./pages/ContactPage";
+import { beep, setMasterVolume } from "./sfx";
+
+const RANKS = ["Cadet", "Flight Engineer", "Mission Specialist", "Flight Director", "Mission Commander"];
 
 function SimulatorView() {
-  const { state, dispatch } = useGame();
-  const idx = STEP_ORDER.indexOf(state.step);
+  const { state, dispatch, simulation } = useGame();
+  const [phase, setPhase] = useState<Phase>("design");
+  const [maxIdx, setMaxIdx] = useState(0);
+  const [quality, setQuality] = useState<Quality>("high");
+  const [volume, setVolume] = useState(0.8);
+  const [launching, setLaunching] = useState(false);
+
+  const rank = RANKS[Math.min(state.completed.length, RANKS.length - 1)];
+
+  const go = (p: Phase) => {
+    const i = PHASES.findIndex((x) => x.id === p);
+    setPhase(p);
+    // going back to design means the launch gate must be passed again
+    setMaxIdx(p === "design" ? 0 : (m: number) => Math.max(m, i));
+  };
+
+  // The simulation is generated once the game reaches its final step.
+  const startFlight = () => {
+    dispatch({ type: "NEXT" });
+    dispatch({ type: "NEXT" });
+    dispatch({ type: "NEXT" });
+    setLaunching(false);
+    go("flight");
+  };
 
   return (
-    <div className="container" style={{ paddingTop: "2rem", paddingBottom: "4rem" }}>
-      <div className="simulator-header">
-        <div>
-          <h1 style={{ fontSize: "2rem", fontWeight: 800 }}>Mission Simulator</h1>
-          <p style={{ color: "var(--text-muted)" }}>
-            Configure your planetary target, launch vehicle, and spacecraft subsystems.
-          </p>
-        </div>
-        <ol className="steps">
-          {STEP_ORDER.map((s, i) => (
-            <li key={s} className={i === idx ? "current" : i < idx ? "done" : ""}>
-              {s}
-            </li>
-          ))}
-        </ol>
-      </div>
+    <div className="sim">
+      <PhaseBar
+        phase={phase}
+        maxIdx={maxIdx}
+        rank={rank}
+        quality={quality}
+        volume={volume}
+        onSelect={go}
+        onQuality={setQuality}
+        onVolume={(v) => {
+          setVolume(v);
+          setMasterVolume(v);
+          beep(660, 0.08);
+        }}
+      />
 
-      <div className={state.step !== "target" ? "simulator-layout" : ""}>
-        <div className="panel">
-          {state.step === "target" && <TargetPicker />}
-          {state.step === "rocket" && <RocketPicker />}
-          {state.step === "spacecraft" && <SpacecraftBuilder />}
-          {state.step === "results" && <Results />}
-
-          {state.step !== "results" && (
-            <div className="nav">
-              <button
-                type="button"
-                disabled={idx === 0}
-                onClick={() => dispatch({ type: "BACK" })}
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                className="primary"
-                onClick={() => dispatch({ type: "NEXT" })}
-              >
-                {state.step === "spacecraft" ? "Launch!" : "Next"}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {state.step !== "target" && (
-          <aside className="sticky-sidebar">
-            <ScoreBoard />
-          </aside>
+      <div
+        className="container sim-stage"
+        key={phase}
+        onClickCapture={(e) => {
+          if ((e.target as HTMLElement).closest(".opt:not(:disabled)")) beep(520, 0.07, "triangle", 0.05);
+        }}
+      >
+        {phase === "design" && (
+          <DesignDesk
+            quality={quality}
+            onNext={() => {
+              beep(640, 0.08, "triangle", 0.05);
+              go("launch");
+            }}
+          />
         )}
+        {phase === "launch" && (
+          <LaunchPhase quality={quality} onBack={() => go("design")} onLaunch={() => setLaunching(true)} />
+        )}
+        {phase === "flight" && <FlightPhase quality={quality} onDebrief={() => go("debrief")} />}
+        {phase === "debrief" &&
+          (simulation ? (
+            <DebriefPhase
+              simulation={simulation}
+              onReplay={() => go("flight")}
+              onRedesign={() => go("design")}
+              onNextMission={(t) => {
+                dispatch({ type: "SET_TARGET", target: t });
+                go("design");
+              }}
+            />
+          ) : (
+            <p className="hint">No flight data yet. Launch a mission first.</p>
+          ))}
       </div>
+
+      {launching && <LaunchCountdown onAbort={() => setLaunching(false)} onDone={startFlight} />}
     </div>
   );
 }

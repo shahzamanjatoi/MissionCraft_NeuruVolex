@@ -2,7 +2,8 @@ import type { CSSProperties } from "react";
 import { ANTENNAS, ENGINES, INSTRUMENTS } from "../data";
 import { useGame } from "../store/useGame";
 import type { NumericField } from "../store/gameReducer";
-import { SpecMeter } from "./SpecParts";
+import { SpecMeter, StepHead } from "./SpecParts";
+import { PreflightBoard } from "./PreflightBoard";
 
 const SLIDERS: { field: NumericField; label: string; unit: string; min: number; max: number; step: number }[] = [
   { field: "dryMass_kg", label: "Spacecraft body mass", unit: "kg", min: 100, max: 2000, step: 50 },
@@ -19,9 +20,8 @@ export function SpacecraftBuilder() {
   const s = state.design.spacecraft;
   return (
     <section>
-      <h2 className="step-title">
-        <span className="step-num mono">03</span> Design your spacecraft
-      </h2>
+      <StepHead n={3} title="Design your spacecraft" hint="Balance mass, power, and communications. The live check updates as you build." />
+      <PreflightBoard />
 
       <h3>Engine</h3>
       <div className="cards">

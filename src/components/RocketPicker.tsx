@@ -1,6 +1,6 @@
 import { LAUNCH_VEHICLES } from "../data";
 import { useGame } from "../store/useGame";
-import { RocketIcon, SpecMeter } from "./SpecParts";
+import { CheckMark, RocketIcon, SpecMeter, StepHead } from "./SpecParts";
 
 const MAX_PAYLOAD = Math.max(...LAUNCH_VEHICLES.map((v) => v.payloadToLEO_kg));
 
@@ -8,14 +8,13 @@ export function RocketPicker() {
   const { state, dispatch } = useGame();
   return (
     <section>
-      <h2 className="step-title">
-        <span className="step-num mono">02</span> Pick your rocket
-      </h2>
+      <StepHead n={2} title="Pick your rocket" hint="Bigger rockets lift more mass but cost more of your budget." />
       <div className="cards">
         {LAUNCH_VEHICLES.map((v, i) => (
           <button key={v.name} type="button"
             className={`${state.design.launchVehicle.name === v.name ? "card selected" : "card"} spec-card`}
             onClick={() => dispatch({ type: "SET_LAUNCHER", launchVehicle: v })}>
+            {state.design.launchVehicle.name === v.name && <CheckMark />}
             <span className="spec-card__top">
               <RocketIcon tier={Math.min(i, 2) as 0 | 1 | 2} />
               <span className="badge badge--cost mono">${v.cost_musd}M</span>

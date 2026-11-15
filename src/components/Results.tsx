@@ -1,4 +1,4 @@
-﻿import { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { useGame } from "../store/useGame";
 import { LaunchReplay } from "./LaunchReplay";
 
@@ -24,11 +24,30 @@ export function Results() {
     return `${hours}h ${minutes}m`;
   };
 
+  const stars = r.feasible ? (r.score >= 90 ? 3 : r.score >= 70 ? 2 : 1) : 0;
+
   return (
     <section>
-      <h2 className="step-title">
-        <span className="step-num mono">04</span> Mission Results
-      </h2>
+      <div className="sim-step-head">
+        <span className="sim-step-head__n mono">Step 4 of 4</span>
+        <h2 className="step-title">Mission results</h2>
+      </div>
+
+      <div className={r.feasible ? "sim-banner is-win" : "sim-banner is-fail"}>
+        <div className="sim-banner__stars" role="img" aria-label={`${stars} of 3 stars`}>
+          {[0, 1, 2].map((n) => (
+            <svg key={n} viewBox="0 0 24 24" className={n < stars ? "on" : ""} style={{ animationDelay: `${n * 220 + 300}ms` }}>
+              <path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" />
+            </svg>
+          ))}
+        </div>
+        <div>
+          <p className="sim-banner__title">{r.feasible ? "Cleared for flight" : "Mission scrubbed"}</p>
+          <p className="sim-banner__sub mono">
+            Score {r.score}/100 · Cost ${r.cost_musd}M
+          </p>
+        </div>
+      </div>
 
       <h3>Engineering Evaluation</h3>
       <p className={r.feasible ? "verdict good" : "verdict bad"}>
@@ -185,7 +204,7 @@ export function Results() {
       <LaunchReplay />
       <button
         type="button"
-        className="primary"
+        className="sim-btn sim-btn--next sim-replay-btn"
         onClick={() => dispatch({ type: "RESET" })}
       >
         Play again

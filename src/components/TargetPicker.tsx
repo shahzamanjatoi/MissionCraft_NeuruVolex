@@ -1,7 +1,7 @@
 import { TARGETS, isTargetUnlocked, previousLevel } from "../data";
 import { requiredDeltaV } from "../engine/orbit";
 import { useGame } from "../store/useGame";
-import { PlanetIcon, SpecMeter } from "./SpecParts";
+import { CheckMark, LockIcon, PlanetIcon, SpecMeter, StepHead } from "./SpecParts";
 
 const MAX_DV = requiredDeltaV("Mars");
 
@@ -10,10 +10,7 @@ export function TargetPicker() {
   const allOpen = TARGETS.every((t) => isTargetUnlocked(state.completed, t.id));
   return (
     <section>
-      <h2 className="step-title">
-        <span className="step-num mono">01</span> Choose your target
-      </h2>
-      <p className="hint">Finish a level to unlock the next one.</p>
+      <StepHead n={1} title="Choose your target" hint="Clear a level to unlock the next, each destination demands more delta-v." />
       <div className="cards">
         {TARGETS.map((t) => {
           const open = isTargetUnlocked(state.completed, t.id);
@@ -22,7 +19,7 @@ export function TargetPicker() {
           const done = state.completed.includes(t.id);
           const dv = requiredDeltaV(t.id);
           return (
-            <button key={t.id} type="button" disabled={!open}
+            <button key={t.id} type="button" disabled={!open} data-target={t.id} aria-pressed={state.design.target === t.id}
               className={`${state.design.target === t.id ? "card selected" : "card"} spec-card`}
               onClick={() => dispatch({ type: "SET_TARGET", target: t.id })}>
               <span className="spec-card__top">
@@ -32,10 +29,13 @@ export function TargetPicker() {
                   {done && <span className="badge badge--ok">✓ Cleared</span>}
                 </span>
               </span>
+              {state.design.target === t.id && open && <CheckMark />}
               <strong className="spec-card__title">{t.name}</strong>
               <span className="spec-card__desc">{t.description}</span>
               <SpecMeter label="Delta-v difficulty" value={dv / MAX_DV} text={dv === 0 ? "baseline" : `${Math.round((dv / MAX_DV) * 100)}%`} />
-              {!open && <span className="locked">Locked: finish {prevName} first</span>}
+              {!open && (
+                <span className="locked sim-locked"><LockIcon /> Finish {prevName} to unlock</span>
+              )}
             </button>
           );
         })}
