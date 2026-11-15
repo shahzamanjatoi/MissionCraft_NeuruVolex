@@ -1,3 +1,4 @@
+
 import type {
   MissionStartSnapshot,
   MissionState,
@@ -10,7 +11,11 @@ import {
   advanceMissionPhase,
 } from "./missionController";
 
-import { applyMissionEvent } from "./missionEvents";
+import { applyMissionEvent, changeLoadMode } from "./missionEvents";
+import {
+  applyMissionControlDecision,
+  type MissionControlChoice,
+} from "./missionControl";
 import { advanceMissionTime } from "./missionSimulation";
 import { generateMissionEvents } from "./missionReplay";
 import { eclipseSeconds } from "../engine/power";
@@ -23,6 +28,7 @@ import { summarizeMission } from "./missionResults";
 export interface MissionRunnerOptions {
   missionDurationSeconds: number;
   stepSeconds?: number;
+  missionControlChoice?: MissionControlChoice;
 }
 
 export interface MissionRunOutput {
@@ -36,7 +42,11 @@ export function runMissionSimulation(
   snapshot: MissionStartSnapshot,
   options: MissionRunnerOptions,
 ): MissionRunOutput {
-  const { missionDurationSeconds, stepSeconds = 3600 } = options;
+  const {
+    missionDurationSeconds,
+    stepSeconds = 3600,
+    missionControlChoice,
+  } = options;
 
   if (
     !Number.isFinite(missionDurationSeconds) ||
@@ -52,8 +62,6 @@ export function runMissionSimulation(
   const events = generateMissionEvents(
     snapshot.eventSeed,
     missionDurationSeconds,
-    // Same eclipse length the engine's battery check uses, so a design that passes
-    // the engineering checks does not run out of power in the simulation.
     eclipseSeconds(snapshot.design.target),
   );
 
@@ -76,9 +84,29 @@ export function runMissionSimulation(
       eventIndex < events.length &&
       events[eventIndex].missionTimeSeconds <= state.elapsedSeconds
     ) {
-      state = applyMissionEvent(state, events[eventIndex]);
-      eventIndex++;
+      const event = events[eventIndex];
 
+      state = applyMissionEvent(state, event);
+
+      // Apply the player's power decision when the eclipse begins.
+      if (
+        event.type === "eclipse-start" &&
+        missionControlChoice
+      ) {
+        state = applyMissionControlDecision(
+          state,
+          event.id,
+          missionControlChoice,
+          snapshot.config,
+        );
+      }
+
+      // Restore full load when the eclipse ends.
+      if (event.type === "eclipse-end") {
+        state = changeLoadMode(state, "full", snapshot.config);
+      }
+
+      eventIndex++;
       telemetry = appendTelemetry(telemetry, state);
     }
 
