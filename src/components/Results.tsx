@@ -1,5 +1,19 @@
-﻿import { useGame } from "../store/useGame";
+﻿import { lazy, Suspense } from "react";
+import { useGame } from "../store/useGame";
 import { LaunchReplay } from "./LaunchReplay";
+
+const SceneCanvas = lazy(() =>
+  import("../3d/components/SceneCanvas").then((module) => ({
+    default: module.SceneCanvas,
+  })),
+);
+
+const TARGET_NAME: Record<string, string> = {
+  LEO: "Low Earth Orbit",
+  GEO: "Geostationary Orbit",
+  Moon: "Moon",
+  Mars: "Mars",
+};
 
 export function Results() {
   const { result: r, state, simulation, dispatch } = useGame();
@@ -44,6 +58,32 @@ export function Results() {
         <>
           <hr />
           <h3>Mission Simulation</h3>
+
+          <section className="mission-visualization" aria-label="Interactive 3D mission visualization">
+            <div className="mission-visualization__heading">
+              <div>
+                <span className="mission-visualization__eyebrow">MISSION CONTROL / LIVE REPLAY</span>
+                <h3>Mission Visualization</h3>
+              </div>
+              <span className="mission-visualization__target mono">
+                {TARGET_NAME[state.design.target]}
+              </span>
+            </div>
+            <Suspense
+              fallback={
+                <div className="scene-loading" role="status">
+                  Initializing mission visualization…
+                </div>
+              }
+            >
+              <SceneCanvas
+                target={state.design.target}
+                simulation={simulation}
+                targetName={TARGET_NAME[state.design.target]}
+                batteryCapacityWh={state.design.spacecraft.batteryWh}
+              />
+            </Suspense>
+          </section>
 
           <p>
             Outcome:{" "}
