@@ -467,7 +467,7 @@ export function HomePage({ onNavigate }: { onNavigate: (page: PageId) => void })
       {/* 1. Full-viewport video hero with staggered entrance */}
       <section className="hero-video-section">
         <div className="hero-video-layer">
-          <VideoBackground />
+          <VideoBackground variant="hero" />
         </div>
         <div className="hero-video-overlay" />
 
