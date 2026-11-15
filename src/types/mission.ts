@@ -12,6 +12,8 @@ export interface MissionDesign {
   };
 }
 
+export type RiskLevel = "low" | "moderate" | "high";
+
 export interface MissionResult {
   feasible: boolean;
   deltaVAvailable_ms: number;
@@ -19,6 +21,14 @@ export interface MissionResult {
   powerMargin: number;
   massMargin: number;
   commsOk: boolean;
+  /** Spare cooling as a fraction: 0.2 means radiators shed 20% more heat than the craft makes. */
+  thermalMargin: number;
+  thermalOk: boolean;
+  /** Overall mission risk, 0 (safe) to 1 (very risky). */
+  riskScore: number;
+  riskLevel: RiskLevel;
+  /** The biggest causes of risk, in plain words. */
+  riskDrivers: string[];
   cost_musd: number;
   score: number;
   warnings: string[];

@@ -9,6 +9,11 @@ const BATTERY_USABLE = 0.8; // depth of discharge
 const SUN_DISTANCE_AU: Record<MissionDesign["target"], number> = { LEO: 1, GEO: 1, Moon: 1, Mars: 1.52 };
 const ECLIPSE_MIN: Record<MissionDesign["target"], number> = { LEO: 36, GEO: 72, Moon: 45, Mars: 40 };
 
+/** How long the craft spends in Earth's shadow each orbit, in seconds. */
+export function eclipseSeconds(target: MissionDesign["target"]): number {
+  return ECLIPSE_MIN[target] * 60;
+}
+
 export function solarPower(areaM2: number, target: MissionDesign["target"]): number {
   const d = SUN_DISTANCE_AU[target];
   return (areaM2 * SOLAR_CONSTANT * CELL_EFFICIENCY * SYSTEM_FACTOR) / (d * d);

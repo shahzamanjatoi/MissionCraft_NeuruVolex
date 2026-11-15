@@ -1,4 +1,3 @@
-
 import { describe, it, expect } from "vitest";
 import type {
   MissionStartSnapshot,
@@ -34,6 +33,11 @@ const snapshot: MissionStartSnapshot = {
     deltaVAvailable_ms: 3000,
     deltaVRequired_ms: 2500,
     powerMargin: 1,
+    thermalMargin: 1,
+    thermalOk: true,
+    riskScore: 0.1,
+    riskLevel: "low",
+    riskDrivers: [],
     massMargin: 0.2,
     commsOk: true,
     cost_musd: 50,
