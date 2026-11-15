@@ -12,3 +12,5 @@
 @import "tailwindcss/utilities.css" source(none);
 
 @source "./pages/TeamPage.tsx";
+@source "./components/HowItWorks.tsx";
+@source "./components/MissionTiers.tsx";
